@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Nota Sifir Beraudio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Stail yang diasingkan (seolah-olah dalam style.css) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Latar belakang ceria: Sky Blue yang sangat lembut */
+            background-color: #f0f9ff; 
+        }
+        .card {
+            background-color: #ffffff;
+            /* Menambah sentuhan warna pada shadow - Bayangan biru yang ceria */
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2); 
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.25);
+        }
+        .equation {
+            /* Menggunakan Tailwind untuk saiz font bagi konsistensi */
+            padding: 0.5rem 0;
+            transition: background-color 0.2s;
+        }
+        
+        /* Warna Primer: Bright Blue (Biru Elektrik, untuk fokus) */
+        .text-prime {
+            color: #3b82f6; /* Blue 500 */
+        }
+        .bg-prime {
+            background-color: #3b82f6;
+        }
+
+        /* Warna Jawapan: Vibrant Red */
+        .text-maroon {
+            color: #EF4444; /* Vibrant Red (Red 500) */
+        }
+        
+        /* Custom style untuk dropdown */
+        #multiplier-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-indent: 1px;
+            text-overflow: '';
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5em;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Kontena Utama Sifir -->
+    <div class="w-full max-w-lg">
+        <!-- Tajuk Utama BARU: Meningkatkan saiz kepada text-4xl/md:text-5xl dan font-extrabold -->
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-1 text-prime">Nota Sifir Berbunyi</h1>
+        <!-- Jenama dengan warna ceria (pink-600, font-semibold) -->
+        <p class="text-sm text-center text-pink-600 font-semibold mb-6">Edukids by Mizz</p>
+
+
+        <div id="sifir-card" class="card rounded-2xl p-6 md:p-8">
+            <!-- Kawalan Pemilihan Sifir -->
+            <div class="text-center mb-6">
+                <label for="multiplier-select" class="block text-lg font-medium text-gray-600 mb-2">Pilih Sifir Darab:</label>
+                <!-- Warna latar belakang Prime di sini -->
+                <select id="multiplier-select" class="w-full max-w-xs mx-auto block text-center text-4xl font-extrabold text-white bg-prime border-4 border-prime rounded-xl p-2 shadow-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150">
+                    <!-- Opsyen akan diisi oleh JavaScript -->
+                </select>
+                <h2 id="sifir-title" class="hidden">2</h2> 
+            </div>
+
+            <!-- Senarai Persamaan -->
+            <div id="sifir-list" class="rounded-lg overflow-hidden border border-gray-200">
+                <!-- Persamaan akan dimasukkan di sini oleh JavaScript -->
+            </div>
+
+            <!-- Kawalan Audio -->
+            <div class="flex flex-col items-center mt-6">
+                <!-- Butang Baca Sifir -->
+                <button id="speak-button" class="bg-prime hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center">
+                    <svg id="speak-icon" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
+                    <span id="speak-text">Baca Sifir Ini</span>
+                    <div id="loading-spinner" class="hidden spinner-border animate-spin ml-3 h-5 w-5 border-4 rounded-full border-t-2 border-white" role="status"></div>
+                </button>
+                <p id="audio-message" class="text-sm mt-2 text-red-500"></p>
+
+                <!-- Butang Kawalan Bunyi -->
+                <button id="sound-toggle-button" class="mt-4 flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-full transition duration-150">
+                    <span id="sound-icon-on" class="mr-2 hidden">
+                        <!-- Ikon Speaker (Bunyi Hidup) -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
+                    </span>
+                    <span id="sound-icon-off" class="mr-2">
+                        <!-- Ikon Speaker Mute (Bunyi Mati) -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17a4 4 0 00-4-4H8a4 4 0 00-4 4v2a1 1 0 001 1h8a1 1 0 001-1v-2zm-4-4V7a4 4 0 014-4h2a4 4 0 014 4v6m-4 0v4m0 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </span>
+                    <span id="sound-text">Bunyi Mati</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Kawalan Navigasi -->
+        <div class="flex justify-between mt-6">
+            <button id="prev-button" class="flex items-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-full transition duration-150 disabled:opacity-50">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Sebelum
+            </button>
+            <!-- Warna butang navigasi seterusnya diubah kepada Prime Color -->
+            <button id="next-button" class="flex items-center bg-prime hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-150">
+                Seterusnya
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+        <p id="user-id-display" class="text-xs text-gray-500 text-center mt-4"></p>
+    </div>
+
+    <!-- Logik JavaScript/skrip.js yang diasingkan secara logik -->
+    <script type="module">
+        // --- Import Firebase (Hanya diperlukan dalam index.html) ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 1. Persediaan Pembolehubah Global (Configuration) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        setLogLevel('Debug');
+
+        let app, db, auth;
+        let userId = 'anon';
+
+        // Pembolehubah DOM untuk interaksi UI
+        const SPEAK_BUTTON = document.getElementById('speak-button');
+        const SPEAK_TEXT = document.getElementById('speak-text');
+        const LOADING_SPINNER = document.getElementById('loading-spinner');
+        const AUDIO_MESSAGE = document.getElementById('audio-message');
+        const SIFIR_TITLE = document.getElementById('sifir-title'); 
+        const SIFIR_LIST = document.getElementById('sifir-list');
+        const PREV_BUTTON = document.getElementById('prev-button');
+        const NEXT_BUTTON = document.getElementById('next-button');
+        const MULTIPLIER_SELECT = document.getElementById('multiplier-select'); 
+        
+        // Pembolehubah BARU untuk Kawalan Bunyi
+        const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
+        const SOUND_ICON_ON = document.getElementById('sound-icon-on');
+        const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
+        const SOUND_TEXT = document.getElementById('sound-text');
+        
+        let isSoundEnabled = true; // Status bunyi global
+        let isSpeaking = false;
+        let currentAudio = null;
+        let currentMultiplier = 1;
+        const MIN_MULTIPLIER = 1;
+        const MAX_MULTIPLIER = 12;
+
+        let cachedAudioUrl = null; // Cache URL audio
+        let audioContext; // Untuk Web Audio API
+
+        // --- 2. Fungsi Bantuan Audio (Audio Helper Functions) ---
+
+        /** Menukar data PCM mentah (Int16) kepada blob WAV yang boleh dimainkan. */
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const byteRate = sampleRate * numChannels * bytesPerSample;
+            const blockAlign = numChannels * bytesPerSample;
+
+            const dataLength = pcm16.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataLength);
+            const view = new DataView(buffer);
+
+            let offset = 0;
+
+            // RIFF chunk descriptor
+            writeString(view, offset, 'RIFF'); offset += 4;
+            view.setUint32(offset, 36 + dataLength, true); offset += 4;
+            writeString(view, offset, 'WAVE'); offset += 4;
+
+            // fmt sub-chunk
+            writeString(view, offset, 'fmt '); offset += 4;
+            view.setUint32(offset, 16, true); offset += 4; // Sub-chunk size
+            view.setUint16(offset, 1, true); offset += 2; // Audio format (1=PCM)
+            view.setUint16(offset, numChannels, true); offset += 2;
+            view.setUint32(offset, sampleRate, true); offset += 4;
+            view.setUint32(offset, byteRate, true); offset += 4;
+            view.setUint16(offset, blockAlign, true); offset += 2;
+            view.setUint16(offset, 16, true); offset += 2; // Bits per sample
+
+            // data sub-chunk
+            writeString(view, offset, 'data'); offset += 4;
+            view.setUint32(offset, dataLength, true); offset += 4;
+
+            // Tulis data PCM
+            for (let i = 0; i < pcm16.length; i++, offset += bytesPerSample) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+
+            function writeString(view, offset, s) {
+                for (let i = 0; i < s.length; i++) {
+                    view.setUint8(offset + i, s.charCodeAt(i));
+                }
+            }
+        }
+
+        /** Menukar rentetan base64 kepada ArrayBuffer. */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+        
+        // Fungsi untuk menghentikan audio dan menetapkan semula UI
+        function stopSpeaking() {
+            if (currentAudio) currentAudio.pause();
+            isSpeaking = false;
+            SPEAK_TEXT.textContent = 'Baca Sifir Ini';
+            SPEAK_BUTTON.disabled = false;
+            AUDIO_MESSAGE.textContent = '';
+            currentAudio = null;
+        }
+
+        /** BARU: Menjana dan memainkan kesan bunyi klik pendek menggunakan Web Audio API. */
+        function playClickSound() {
+            if (!isSoundEnabled) return;
+            
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // Tetapkan frekuensi (bunyi 'bip' rendah)
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // 440 Hz (A4)
+                
+                // Ramp up volume cepat
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                
+                // Ramp down volume cepat (durasi 50ms)
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.05);
+
+            } catch (e) {
+                console.warn("Web Audio API tidak berfungsi. Tidak boleh memainkan kesan bunyi.", e);
+            }
+        }
+
+
+        // --- 3. Logik Teks-ke-Ucapan (Gemini TTS Logic) ---
+
+        /** Melakukan fetch audio dan menyediakan URL untuk main balik. */
+        async function fetchAndPrepareAudio(multiplier) {
+            // Jika audio sudah ada dalam cache, gunakannya
+            if (cachedAudioUrl) {
+                return cachedAudioUrl;
+            }
+
+            // Bina teks Bahasa Melayu untuk TTS, termasuk arahan sebutan
+            let text = `Baca dalam nada ceria dan sebutan Bahasa Melayu standard: Ini ialah sifir darab ${multiplier}. `;
+            for (let i = 1; i <= 12; i++) {
+                text += `${multiplier} darab ${i} sama dengan ${multiplier * i}. `;
+            }
+            text += Itu sahaja sifir ${multiplier}.; // Penamat
+
+            const apiKey = "";
+            const apiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey};
+
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } 
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            const maxRetries = 3;
+            let currentDelay = 1000;
+
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(Ralat API: ${response.status} ${response.statusText});
+                    }
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                        const match = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = match ? parseInt(match[1], 10) : 16000; 
+
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        
+                        // Cache dan pulangkan URL
+                        cachedAudioUrl = URL.createObjectURL(wavBlob);
+                        return cachedAudioUrl; 
+                    } else {
+                        throw new Error("Respons TTS tidak mengandungi data audio yang sah.");
+                    }
+                } catch (error) {
+                    console.error(Ralat cubaan TTS #${attempt + 1}:, error);
+                    if (attempt < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2; // Exponential backoff
+                    } else {
+                        throw new Error('Gagal mendapatkan audio selepas semua cubaan.');
+                    }
+                }
+            }
+        }
+        
+        /** Mengawal logik main balik sekali sahaja. */
+        async function speakTable(multiplier) {
+            if (!isSoundEnabled) {
+                // Jangan buat apa-apa jika bunyi dimatikan
+                AUDIO_MESSAGE.textContent = 'Bunyi dimatikan.';
+                return;
+            }
+
+            // 1. Logik Hentikan Audio (Toggle)
+            if (isSpeaking) {
+                stopSpeaking();
+                return;
+            }
+
+            // 2. Tetapkan Status Loading
+            isSpeaking = true;
+            SPEAK_TEXT.textContent = 'Memuatkan...';
+            LOADING_SPINNER.classList.remove('hidden');
+            SPEAK_BUTTON.disabled = true;
+            AUDIO_MESSAGE.textContent = '';
+            
+            let audioUrl;
+            try {
+                audioUrl = await fetchAndPrepareAudio(multiplier);
+            } catch (error) {
+                AUDIO_MESSAGE.textContent = error.message;
+                stopSpeaking();
+                return;
+            }
+
+            // 3. Mula Mainkan Audio
+            SPEAK_TEXT.textContent = 'Hentikan Bacaan';
+            SPEAK_BUTTON.disabled = false;
+            LOADING_SPINNER.classList.add('hidden');
+            
+            currentAudio = new Audio(audioUrl); 
+            
+            currentAudio.onended = () => {
+                // Selesai main balik
+                stopSpeaking();
+            };
+            
+            currentAudio.onerror = (e) => {
+                console.error("Ralat semasa memainkan audio.", e);
+                AUDIO_MESSAGE.textContent = Ralat main balik.;
+                stopSpeaking();
+            };
+            
+            currentAudio.play().catch(error => {
+                // Tangani ralat autoplay (paling kerap berlaku)
+                console.warn("Ralat Autoplay dikesan. Sila klik butang secara manual.", error);
+                AUDIO_MESSAGE.textContent = 'Sila klik butang sekali untuk memulakan main balik.';
+                stopSpeaking();
+            });
+        }
+
+        // --- 4. Logik Aplikasi Utama (Main App Logic) ---
+        
+        /** Mengisi menu lungsur dengan sifir 1 hingga 12. */
+        function populateMultiplierSelect() {
+            MULTIPLIER_SELECT.innerHTML = '';
+            for (let i = MIN_MULTIPLIER; i <= MAX_MULTIPLIER; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = Sifir ${i};
+                MULTIPLIER_SELECT.appendChild(option);
+            }
+        }
+
+        /** BARU: Mengemas kini UI butang kawalan bunyi */
+        function updateSoundToggleUI() {
+            if (isSoundEnabled) {
+                SOUND_ICON_ON.classList.remove('hidden');
+                SOUND_ICON_OFF.classList.add('hidden');
+                SOUND_TEXT.textContent = 'Bunyi Hidup';
+                SOUND_TOGGLE_BUTTON.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
+                SOUND_TOGGLE_BUTTON.classList.add('bg-green-100', 'hover:bg-green-200', 'text-green-700');
+            } else {
+                SOUND_ICON_ON.classList.add('hidden');
+                SOUND_ICON_OFF.classList.remove('hidden');
+                SOUND_TEXT.textContent = 'Bunyi Mati';
+                SOUND_TOGGLE_BUTTON.classList.remove('bg-green-100', 'hover:bg-green-200', 'text-green-700');
+                SOUND_TOGGLE_BUTTON.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
+            }
+        }
+
+        /** Mengemas kini paparan sifir di UI. */
+        function updateSifirDisplay() {
+            // SIFIR_TITLE.textContent = currentMultiplier; // Tidak digunakan lagi
+            MULTIPLIER_SELECT.value = currentMultiplier; // KEMAS KINI DROPDOWN
+
+            SIFIR_LIST.innerHTML = '';
+            
+            for (let i = 1; i <= 12; i++) {
+                const result = currentMultiplier * i;
+                const equationDiv = document.createElement('div');
+                // Menggunakan Tailwind classes untuk selang-seli warna yang lebih jelas
+                // bg-white (ganjil) vs bg-blue-50 (genap)
+                const rowClass = i % 2 === 0 ? 'bg-blue-50' : 'bg-white';
+                
+                // Set saiz keseluruhan baris, KINI TANPA text-xl supaya saiz span individu berkesan
+                // Menambah hover:bg-yellow-100 untuk fokus visual
+                equationDiv.className = equation flex justify-between p-3 md:px-5 font-mono ${rowClass} hover:bg-yellow-100 transition duration-100;
+                
+                // BARU: Menambah pendengar acara untuk bunyi sentuhan/hover
+                equationDiv.addEventListener('mouseover', playClickSound);
+                equationDiv.addEventListener('touchstart', playClickSound);
+                
+                // PERUBAHAN UTAMA: Nombor (axb) kini menggunakan warna hijau.
+                equationDiv.innerHTML = `
+                    <span class="font-extrabold text-green-700 text-2xl">${currentMultiplier}</span>
+                    <span class="text-green-500 text-2xl">x</span>
+                    <span class="font-extrabold text-green-700 text-2xl">${i}</span>
+                    <span class="text-green-500 text-2xl">=</span>
+                    <span class="font-extrabold text-maroon text-3xl">${result}</span>
+                `;
+                SIFIR_LIST.appendChild(equationDiv);
+            }
+
+            // Kemas kini status butang navigasi
+            PREV_BUTTON.disabled = currentMultiplier === MIN_MULTIPLIER;
+            NEXT_BUTTON.disabled = currentMultiplier === MAX_MULTIPLIER;
+
+            // Hentikan sebarang audio sedia ada dan tetapkan semula cache
+            stopSpeaking();
+            if (cachedAudioUrl) {
+                URL.revokeObjectURL(cachedAudioUrl); 
+            }
+            cachedAudioUrl = null; 
+        }
+
+        /** Menetapkan pendarab (multiplier) seterusnya. */
+        function goToNextSifir() {
+            if (currentMultiplier < MAX_MULTIPLIER) {
+                currentMultiplier++;
+                updateSifirDisplay();
+            }
+        }
+
+        /** Menetapkan pendarab (multiplier) sebelumnya. */
+        function goToPrevSifir() {
+            if (currentMultiplier > MIN_MULTIPLIER) {
+                currentMultiplier--;
+                updateSifirDisplay();
+            }
+        }
+        
+        /** Logik toggle bunyi */
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            updateSoundToggleUI();
+            stopSpeaking(); // Hentikan TTS jika dimatikan
+            
+            // Cuba untuk meneruskan AudioContext jika ia baru sahaja dihidupkan
+            if (isSoundEnabled && audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().catch(e => console.error("Ralat semasa resume AudioContext:", e));
+            }
+        }
+
+        // --- 5. Pendengar Acara (Event Listeners) ---
+
+        NEXT_BUTTON.addEventListener('click', goToNextSifir);
+        PREV_BUTTON.addEventListener('click', goToPrevSifir);
+        SPEAK_BUTTON.addEventListener('click', () => speakTable(currentMultiplier));
+        MULTIPLIER_SELECT.addEventListener('change', (event) => {
+            const newMultiplier = parseInt(event.target.value, 10);
+            if (!isNaN(newMultiplier) && newMultiplier >= MIN_MULTIPLIER && newMultiplier <= MAX_MULTIPLIER) {
+                currentMultiplier = newMultiplier;
+                updateSifirDisplay();
+            }
+        });
+        
+        // BARU: Pendengar Acara untuk Butang Kawalan Bunyi
+        SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
+
+
+        // --- 6. Inisialisasi Firebase dan Auth (Initialization) ---
+
+        async function initApp() {
+            // Sediakan status awal UI kawalan bunyi
+            updateSoundToggleUI();
+
+            // Isikan dropdown sebelum memulakan paparan
+            populateMultiplierSelect(); 
+            
+            try {
+                if (Object.keys(firebaseConfig).length > 0) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                }
+
+                // Pengesahan: Log masuk dengan token tersuai atau secara anonim
+                if (initialAuthToken && auth) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else if (auth) {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                    } else if (auth) {
+                        // Jika auth ada tetapi tiada pengguna (e.g., selepas sign out), gunakan anon ID
+                        userId = 'anon-' + crypto.randomUUID().substring(0, 8);
+                    }
+                    document.getElementById('user-id-display').textContent = ID Pengguna: ${userId};
+                    console.log("Auth State Changed. User ID:", userId);
+                    
+                    // Setelah pengesahan selesai, mulakan paparan
+                    updateSifirDisplay(); 
+                });
+
+            } catch (error) {
+                console.error("Ralat semasa inisialisasi Firebase/Auth:", error);
+                document.getElementById('user-id-display').textContent = Ralat Auth: ${error.message};
+                
+                // Mulakan paparan walaupun Auth gagal (hanya fungsi teras tanpa simpanan data)
+                updateSifirDisplay(); 
+            }
+        }
+
+        window.onload = initApp;
+
+    </script>
+</body>
+</html>

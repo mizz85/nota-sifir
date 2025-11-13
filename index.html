@@ -212,20 +212,12 @@
         const SECRET_PASSWORD = "notasifir5973"; // <<<<<< KATA LALUAN BARU DITETAPKAN
         const WHATSAPP_NUMBER = "60198950339";
         
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Konfigurasi Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // KOD FIREBASE DIBAWAH INI DIBUANG UNTUK MENCEGAH RALAT AUTH DI GITHUB PAGES
+        // import { initializeApp } from "...";
+        // import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "...";
+        // import { getFirestore, setLogLevel } from "...";
         
-        setLogLevel('Debug');
-
-        let app, db, auth;
-        let userId = 'anon';
+        let userId = 'anon-github'; // ID pengguna tetap untuk GitHub Pages
 
         // Pembolehubah DOM untuk Log Masuk
         const LOGIN_SCREEN = document.getElementById('login-screen');
@@ -810,35 +802,9 @@
             SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
             SIFIR_LIST.addEventListener('click', handleQuizClick); // Pasang handler kuiz
             
-            
-            try {
-                if (Object.keys(firebaseConfig).length > 0) {
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-                }
-
-                // Pengesahan: Log masuk dengan token tersuai atau secara anonim
-                if (initialAuthToken && auth) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else if (auth) {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                    } else if (auth) {
-                        userId = 'anon-' + crypto.randomUUID().substring(0, 8);
-                    }
-                    document.getElementById('user-id-display').textContent = `ID Pengguna: ${userId}`;
-                    console.log("Auth State Changed. User ID:", userId);
-                });
-
-            } catch (error) {
-                console.error("Ralat semasa inisialisasi Firebase/Auth:", error);
-                document.getElementById('user-id-display').textContent = `Ralat Auth: ${error.message}`;
-            }
+            // HANYA log ini, tanpa Firebase Auth
+            document.getElementById('user-id-display').textContent = `ID Pengguna: anon-github`;
+            console.log("App Initialized (GitHub Mode)");
         }
         
         // --- 7. Inisialisasi Halaman (Page Initialization) ---

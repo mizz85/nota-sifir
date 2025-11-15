@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nota Sifir Beraudio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Stail yang diasingkan (seolah-olah dalam style.css) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
         body {
@@ -69,10 +68,8 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 bg-amber-50">
     
-    <!-- SKRIN LOG MASUK (Kelihatan secara lalai) -->
     <div id="login-screen" class="w-full max-w-lg flex flex-col items-center justify-center h-full">
         <div class="card rounded-2xl p-8 w-full bg-login-card border-4 border-pink-400">
-            <!-- LOGO TAMBAHAN DI SKRIN LOG MASUK -->
             <div class="flex justify-center mb-2">
                 <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
                      alt="Logo Syarikat Anda" 
@@ -80,16 +77,12 @@
                      onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
                 />
             </div>
-            <!-- AKHIR LOGO TAMBAHAN -->
-            
-            <!-- TAJUK DITUKAR KEMBALI KEPADA NOTA SIFIR BERAUDIO -->
             <h1 class="text-4xl font-extrabold text-center mb-6 text-login-title">Nota Sifir Beraudio</h1>
             
             <p class="text-center text-gray-700 mb-6">Akses terhad. Sila masukkan Kata Laluan untuk meneruskan.</p>
             
             <div class="mb-4">
                 <label for="password-input" class="block text-sm font-medium text-gray-600 mb-2">Kata Laluan:</label>
-                <!-- PERUBAHAN UTAMA: type="password" ditukar kepada type="text" -->
                 <input type="text" id="password-input" placeholder="Masukkan Kata Laluan" class="w-full text-xl p-3 border-4 border-pink-400 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-200 transition duration-150">
             </div>
             
@@ -99,7 +92,6 @@
                 Log Masuk
             </button>
 
-            <!-- Pautan Bantuan Kata Laluan (KINI MENONJOL) -->
             <div class="text-center mt-6">
                 <a href="https://wa.me/60198950339" target="_blank" class="text-sm font-semibold text-green-600 hover:text-green-700 underline transition duration-150">
                     Lupa kata laluan atau nak kata laluan? (Whatsapp Mizz)
@@ -109,12 +101,8 @@
     </div>
 
 
-    <!-- APLIKASI UTAMA SIFIR (Disembunyikan secara lalai) -->
     <div id="app-container" class="w-full max-w-lg hidden">
         
-        <!-- HEADER: LOGO -> TAJUK UTAMA -->
-        
-        <!-- 1. Logo anda di sini -->
         <div class="flex justify-center mb-4">
             <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
                  alt="Logo Syarikat Anda" 
@@ -123,35 +111,25 @@
             />
         </div>
 
-        <!-- 2. Tajuk Utama -->
         <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-6 text-prime">Nota Sifir Beraudio</h1>
 
-        <!-- KOTAK MAKLUMAT PENTING AUDIO (TTS DIBUANG) -->
         <div class="bg-white p-3 mb-6 rounded-lg shadow-lg border-l-4 border-red-500">
             <p class="text-sm font-semibold text-red-600 mb-1">Penting:</p>
-            <p class="text-xs text-gray-700">Kelajuan audio (suara) bergantung pada kelajuan internet dan prestasi peranti anda. Sila tunggu sebentar sekiranya terdapat kelewatan muatan suara.</p>
+            <p class="text-xs text-gray-700">Kelajuan audio (suara) kini bergantung pada suara terbina dalam pelayar anda, menjadikannya lebih ringan dan pantas.</p>
         </div>
-        <!-- AKHIR KOTAK MAKLUMAT -->
-
-
-        <!-- Tambah border-4 border-pink-400 untuk rupa yang lebih ceria -->
         <div id="sifir-card" class="card rounded-2xl p-6 md:p-8 border-4 border-pink-400">
             
-            <!-- Paparan Skor -->
             <div id="score-display" class="text-center font-bold mb-4 p-2 rounded-lg bg-green-100 border border-green-300 hidden">
                 Skor: <span id="current-score" class="text-green-800">0</span> / <span id="total-attempts" class="text-gray-600">0</span>
             </div>
 
-            <!-- Butang Tukar Mod -->
             <div class="flex justify-center mb-4">
                 <button id="mode-toggle" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full shadow-md transition duration-150 transform hover:scale-105">
                     Tukar ke Mod Kuiz
                 </button>
             </div>
             
-            <!-- Kawalan Audio (KINI DI ATAS) -->
             <div class="flex flex-col items-center mb-6">
-                <!-- Butang Baca Sifir -->
                 <button id="speak-button" class="bg-prime hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center">
                     <svg id="speak-icon" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
                     <span id="speak-text">Baca Sifir Ini</span>
@@ -159,45 +137,34 @@
                 </button>
                 <p id="audio-message" class="text-sm mt-2 text-red-500"></p>
 
-                <!-- Butang Kawalan Bunyi -->
                 <button id="sound-toggle-button" class="mt-4 flex items-center bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-4 rounded-full transition duration-150">
                     <span id="sound-icon-on" class="mr-2">
-                        <!-- Ikon Speaker (Bunyi Hidup) -->
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
                     </span>
                     <span id="sound-icon-off" class="mr-2 hidden">
-                        <!-- Ikon Speaker Mute (Bunyi Mati) -->
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17a4 4 0 00-4-4H8a4 4 0 00-4 4v2a1 1 0 001 1h8a1 1 0 001-1v-2zm-4-4V7a4 4 0 014-4h2a4 4 0 014 4v6m-4 0v4m0 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </span>
-                    <!-- Label lalai kini ditetapkan kepada "Bunyi" (keadaan HIDUP) -->
                     <span id="sound-text">Bunyi</span> 
                 </button>
             </div>
 
 
-            <!-- Kawalan Pemilihan Sifir (KINI DI BAWAH KAWALAN AUDIO) -->
             <div class="text-center mb-6">
                 <label for="multiplier-select" class="block text-lg font-medium text-gray-600 mb-2">Pilih Sifir Darab:</label>
-                <!-- Warna latar belakang Prime di sini -->
                 <select id="multiplier-select" class="w-full max-w-xs mx-auto block text-center text-4xl font-extrabold text-white bg-prime border-4 border-prime rounded-xl p-2 shadow-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150">
-                    <!-- Opsyen akan diisi oleh JavaScript -->
-                </select>
+                    </select>
             </div>
 
-            <!-- Senarai Persamaan -->
             <div id="sifir-list" class="rounded-lg overflow-hidden border border-gray-200">
-                <!-- Persamaan akan dimasukkan di sini oleh JavaScript -->
-            </div>
+                </div>
             
         </div>
 
-        <!-- Kawalan Navigasi -->
         <div class="flex justify-between mt-6">
             <button id="prev-button" class="flex items-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-full transition duration-150 disabled:opacity-50">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 Sebelum
             </button>
-            <!-- Warna butang navigasi seterusnya diubah kepada Prime Color -->
             <button id="next-button" class="flex items-center bg-prime hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-150">
                 Seterusnya
                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -206,18 +173,12 @@
         <p id="user-id-display" class="text-xs text-gray-500 text-center mt-4"></p>
     </div>
 
-    <!-- Logik JavaScript/skrip.js yang diasingkan secara logik -->
     <script type="module">
         // --- 1. Konfigurasi dan Pembolehubah Global ---
-        const SECRET_PASSWORD = "notasifir5973"; // <<<<<< KATA LALUAN BARU DITETAPKAN
+        const SECRET_PASSWORD = "notasifir5973"; 
         const WHATSAPP_NUMBER = "60198950339";
         
-        // KOD FIREBASE DIBAWAH INI DIBUANG UNTUK MENCEGAH RALAT AUTH DI GITHUB PAGES
-        // import { initializeApp } from "...";
-        // import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "...";
-        // import { getFirestore, setLogLevel } from "...";
-        
-        let userId = 'anon-github'; // ID pengguna tetap untuk GitHub Pages
+        let userId = 'anon-github'; 
 
         // Pembolehubah DOM untuk Log Masuk
         const LOGIN_SCREEN = document.getElementById('login-screen');
@@ -240,7 +201,7 @@
         const CURRENT_SCORE = document.getElementById('current-score'); 
         const TOTAL_ATTEMPTS = document.getElementById('total-attempts'); 
         
-        // Pembolehubah BARU untuk Kawalan Bunyi
+        // Pembolehubah Kawalan Bunyi
         const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
         const SOUND_ICON_ON = document.getElementById('sound-icon-on');
         const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
@@ -249,18 +210,16 @@
         let isSoundEnabled = true; // Status bunyi global
         let isSpeaking = false;
         let isQuizMode = false; 
-        let currentAudio = null;
         let currentMultiplier = 1;
         const MIN_MULTIPLIER = 1;
         const MAX_MULTIPLIER = 12;
 
-        let cachedAudioUrl = null; // Cache URL audio
-        let audioContext; // Untuk Web Audio API
+        let audioContext; // Untuk Web Audio API (Kesan Bunyi Sahaja)
         
         // Pembolehubah Skor Kuiz
         let score = 0;
         let questionsAttempted = 0;
-        let quizTarget = null; // Menyimpan soalan semasa: { result: 45, factor1: 5, factor2: 9 }
+        let quizTarget = null; // Menyimpan soalan semasa
         
         // --- 2. Fungsi Log Masuk (Login Logic) ---
         
@@ -282,71 +241,16 @@
         
         // --- 3. Fungsi Bantuan Audio (Audio Helper Functions) ---
         
-        /** Menukar data PCM mentah (Int16) kepada blob WAV yang boleh dimainkan. */
-        function pcmToWav(pcm16, sampleRate) {
-            const numChannels = 1;
-            const bytesPerSample = 2;
-            const byteRate = sampleRate * numChannels * bytesPerSample; 
-            const blockAlign = numChannels * bytesPerSample;
-
-            const dataLength = pcm16.length * bytesPerSample;
-            const buffer = new ArrayBuffer(44 + dataLength);
-            const view = new DataView(buffer);
-
-            let offset = 0;
-
-            // RIFF chunk descriptor
-            writeString(view, offset, 'RIFF'); offset += 4;
-            view.setUint32(offset, 36 + dataLength, true); offset += 4;
-            writeString(view, offset, 'WAVE'); offset += 4;
-
-            // fmt sub-chunk
-            writeString(view, offset, 'fmt '); offset += 4;
-            view.setUint32(offset, 16, true); offset += 4; // Sub-chunk size
-            view.setUint16(offset, 1, true); offset += 2; // Audio format (1=PCM)
-            view.setUint16(offset, numChannels, true); offset += 2;
-            view.setUint32(offset, sampleRate, true); offset += 4;
-            view.setUint32(offset, byteRate, true); offset += 4;
-            view.setUint16(offset, blockAlign, true); offset += 2;
-            view.setUint16(offset, 16, true); offset += 2; // Bits per sample
-
-            // data sub-chunk
-            writeString(view, offset, 'data'); offset += 4;
-            view.setUint32(offset, dataLength, true); offset += 4;
-
-            // Tulis data PCM
-            for (let i = 0; i < pcm16.length; i++, offset += bytesPerSample) {
-                view.setInt16(offset, pcm16[i], true);
-            }
-
-            return new Blob([buffer], { type: 'audio/wav' });
-
-            function writeString(view, offset, s) {
-                for (let i = 0; i < s.length; i++) {
-                    view.setUint8(offset + i, s.charCodeAt(i));
-                }
-            }
-        }
-
-        /** Menukar rentetan base64 kepada ArrayBuffer. */
-        function base64ToArrayBuffer(base64) {
-            const binaryString = atob(base64);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-        
         // Fungsi untuk menghentikan audio dan menetapkan semula UI
         function stopSpeaking() {
-            if (currentAudio) currentAudio.pause();
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
             isSpeaking = false;
             SPEAK_TEXT.textContent = isQuizMode ? 'Tanya Soalan' : 'Baca Sifir Ini';
             SPEAK_BUTTON.disabled = false;
             AUDIO_MESSAGE.textContent = '';
-            currentAudio = null;
+            LOADING_SPINNER.classList.add('hidden'); 
         }
         
         // Fungsi untuk memainkan kesan bunyi BETUL
@@ -395,87 +299,92 @@
             generateTone(440, 0.1, 0.001, 0.05);
         }
 
-        // --- 4. Logik Teks-ke-Ucapan (Gemini TTS Logic) ---
+        // --- 4. Logik Teks-ke-Ucapan (Web Speech API) ---
+        
+        let voices = [];
+        let voiceLoadInterval = null;
 
-        /** Melakukan fetch audio dan menyediakan URL untuk main balik. */
-        async function fetchAndPrepareAudio(text) {
-            // Menggunakan SSML untuk memperlahankan kadar sedikit ('medium')
-            // dan memastikan sebutan Bahasa Melayu yang standard.
-            const ssmlText = `<speak><prosody rate='medium'>${text}</prosody></speak>`; 
+        // Muatkan suara yang tersedia dalam pelayar
+        function loadVoices() {
+            voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                clearInterval(voiceLoadInterval);
+            }
+        }
+
+        // Cuba muatkan suara serta-merta dan teruskan memuatkan secara berkala
+        loadVoices();
+        if (window.speechSynthesis) {
+            voiceLoadInterval = setInterval(loadVoices, 500);
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+
+        /** Menjana dan memainkan audio menggunakan Web Speech API. */
+        function speakMalay(text) {
+            if (!isSoundEnabled || !window.speechSynthesis) {
+                AUDIO_MESSAGE.textContent = 'Suara tidak disokong atau dimatikan.';
+                return;
+            }
+
+            stopSpeaking(); // Batalkan mana-mana ucapan yang sedang berjalan
             
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Konfigurasi TTS untuk nada yang ceria dan mesra
+            utterance.rate = 1.0; 
+            utterance.pitch = 1.1; 
+            
+            // Logik untuk memilih suara perempuan yang diutamakan
+            let preferredVoice = null;
+            
+            // Kriteria 1: Cuba cari suara Melayu/Indonesia (ms/id) yang perempuan
+            const malayFemaleVoice = voices.find(voice => 
+                (voice.lang.includes('ms') || voice.lang.includes('id')) && 
+                (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('perempuan') || voice.name.toLowerCase().includes('suri'))
+            );
 
-            const payload = {
-                // MENGGUNAKAN SSML TEXT DI SINI
-                contents: [{ parts: [{ text: ssmlText }] }], 
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } 
-                    }
-                },
-                model: "gemini-2.5-flash-preview-tts"
+            // Kriteria 2: Ambil sebarang suara perempuan yang mesra (seperti Google/Microsoft)
+            const anyFemaleVoice = voices.find(voice => 
+                voice.name.toLowerCase().includes('female') || 
+                voice.name.toLowerCase().includes('perempuan') ||
+                voice.name.toLowerCase().includes('siri') || 
+                voice.name.toLowerCase().includes('zira')
+            );
+            
+            // Kriteria 3: Ambil suara Melayu/Indonesia pertama (fallback)
+            const malayVoice = voices.find(voice => voice.lang.includes('ms') || voice.lang.includes('id'));
+
+            preferredVoice = malayFemaleVoice || anyFemaleVoice || malayVoice;
+
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                console.warn("Tiada suara perempuan/Melayu ditemui. Menggunakan suara lalai pelayar.");
+            }
+            
+            isSpeaking = true;
+            SPEAK_BUTTON.disabled = true;
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                SPEAK_BUTTON.disabled = false;
+                if (!isQuizMode) {
+                    SPEAK_TEXT.textContent = 'Baca Sifir Ini';
+                }
             };
 
-            const maxRetries = 3;
-            let currentDelay = 1000;
+            utterance.onerror = (e) => {
+                console.error("Ralat TTS pelayar:", e);
+                AUDIO_MESSAGE.textContent = `Ralat suara: ${e.error}`;
+                stopSpeaking();
+            };
 
-            for (let attempt = 0; attempt < maxRetries; attempt++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Ralat API: ${response.status} ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    const part = result?.candidates?.[0]?.content?.parts?.[0];
-                    const audioData = part?.inlineData?.data;
-                    const mimeType = part?.inlineData?.mimeType;
-
-                    if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-                        const match = mimeType.match(/rate=(\d+)/);
-                        const sampleRate = match ? parseInt(match[1], 10) : 16000; 
-
-                        const pcmData = base64ToArrayBuffer(audioData);
-                        const pcm16 = new Int16Array(pcmData);
-                        const wavBlob = pcmToWav(pcm16, sampleRate);
-                        
-                        return URL.createObjectURL(wavBlob); 
-                    } else {
-                        throw new Error("Respons TTS tidak mengandungi data audio yang sah.");
-                    }
-                } catch (error) {
-                    console.error(`Ralat cubaan TTS #${attempt + 1}:`, error);
-                    if (attempt < maxRetries - 1) {
-                        await new Promise(resolve => setTimeout(resolve, currentDelay));
-                        currentDelay *= 2; // Exponential backoff
-                    } else {
-                        throw new Error('Gagal mendapatkan audio selepas semua cubaan.');
-                    }
-                }
-            }
+            window.speechSynthesis.speak(utterance);
         }
         
         /** Menjana teks dan memainkan audio (Kuiz atau Nota). */
-        async function speakTable() {
-            
-            // ** PEMBAHUTAN UTAMA UNTUK AUDIO **: Cuba sambung semula AudioContext sebelum main balik
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioContext.state === 'suspended') {
-                    await audioContext.resume();
-                }
-            } catch (e) {
-                console.error("Gagal menyambung semula AudioContext:", e);
-            }
+        function speakTable() {
             
             if (!isSoundEnabled) {
                 AUDIO_MESSAGE.textContent = 'Bunyi dimatikan.';
@@ -487,12 +396,8 @@
                 return;
             }
 
-            // 2. Tetapkan Status Loading
-            isSpeaking = true;
-            SPEAK_TEXT.textContent = 'Memuatkan...';
-            LOADING_SPINNER.classList.remove('hidden');
-            SPEAK_BUTTON.disabled = true;
-            AUDIO_MESSAGE.textContent = '';
+            // 1. Tetapkan Status Loading UI
+            SPEAK_TEXT.textContent = 'Bercakap... (Klik untuk berhenti)';
             
             let textToSpeak;
             if (isQuizMode) {
@@ -508,49 +413,15 @@
 
             } else {
                 // Logik Nota: Baca semua sifir
-                textToSpeak = `Baca dalam nada ceria dan sebutan Bahasa Melayu standard: Ini ialah sifir darab ${currentMultiplier}. `;
+                textToSpeak = `Ini ialah sifir darab ${currentMultiplier}. `;
                 for (let i = 1; i <= 12; i++) {
                     textToSpeak += `${currentMultiplier} darab ${i} sama dengan ${currentMultiplier * i}. `;
                 }
                 textToSpeak += `Itu sahaja sifir ${currentMultiplier}.`; 
             }
             
-            let audioUrl;
-            try {
-                audioUrl = await fetchAndPrepareAudio(textToSpeak);
-            } catch (error) {
-                AUDIO_MESSAGE.textContent = error.message;
-                stopSpeaking();
-                return;
-            }
-
-            // 3. Mula Mainkan Audio
-            LOADING_SPINNER.classList.add('hidden');
-            
-            currentAudio = new Audio(audioUrl); 
-            
-            currentAudio.onended = () => {
-                // Selepas selesai, set semula UI, tetapi kekalkan soalan (jika Kuiz)
-                isSpeaking = false;
-                SPEAK_BUTTON.disabled = false;
-                
-                if (!isQuizMode) {
-                    // Jika Mod Nota, set semula teks butang
-                    SPEAK_TEXT.textContent = 'Baca Sifir Ini';
-                }
-            };
-            
-            currentAudio.onerror = (e) => {
-                console.error("Ralat semasa memainkan audio.", e);
-                AUDIO_MESSAGE.textContent = `Ralat main balik.`;
-                stopSpeaking();
-            };
-            
-            currentAudio.play().catch(error => {
-                console.warn("Ralat Autoplay dikesan. Sila klik butang secara manual.", error);
-                AUDIO_MESSAGE.textContent = isQuizMode ? 'Sila klik Tanya Soalan sekali lagi.' : 'Sila klik Baca Sifir Ini sekali lagi.';
-                SPEAK_BUTTON.disabled = false;
-            });
+            // 2. Panggil fungsi Web Speech API yang ringan
+            speakMalay(textToSpeak);
         }
 
         // --- 5. Logik Aplikasi Utama (Main App Logic) ---
@@ -655,15 +526,10 @@
                 }
                 
                 equationDiv.innerHTML = `
-                    <!-- Faktor 1: Merah Maroon dan text-3xl -->
                     <span class="font-extrabold text-maroon text-3xl">${currentMultiplier}</span>
-                    <!-- Simbol 'x': Hitam Gelap dan text-3xl -->
                     <span class="text-gray-900 text-3xl">x</span>
-                    <!-- Faktor 2: Merah Maroon dan text-3xl -->
                     <span class="font-extrabold text-maroon text-3xl">${i}</span>
-                    <!-- Simbol '=': Hitam Gelap dan text-3xl -->
                     <span class="text-gray-900 text-3xl">=</span>
-                    <!-- Jawapan (Dynamic: Kuiz atau Nota) -->
                     ${answerHtml}
                 `;
                 SIFIR_LIST.appendChild(equationDiv);
@@ -673,12 +539,8 @@
             PREV_BUTTON.disabled = currentMultiplier === MIN_MULTIPLIER;
             NEXT_BUTTON.disabled = currentMultiplier === MAX_MULTIPLIER;
 
-            // Hentikan sebarang audio sedia ada dan tetapkan semula cache
+            // Hentikan sebarang audio sedia ada 
             stopSpeaking();
-            if (cachedAudioUrl) {
-                URL.revokeObjectURL(cachedAudioUrl); 
-            }
-            cachedAudioUrl = null; 
         }
 
         /** Menetapkan pendarab (multiplier) seterusnya. */
@@ -772,9 +634,8 @@
         }
 
 
-        // --- 6. Inisialisasi Firebase dan Auth (Initialization) ---
+        // --- 6. Inisialisasi Aplikasi (Initialization) ---
         
-        // PENTING: initApp kini dipanggil HANYA selepas log masuk berjaya
         async function initApp() {
             // Sediakan status awal UI kawalan bunyi
             updateSoundToggleUI();
@@ -788,7 +649,7 @@
             // Daftarkan Pendengar Acara Aplikasi Sifir
             NEXT_BUTTON.addEventListener('click', goToNextSifir);
             PREV_BUTTON.addEventListener('click', goToPrevSifir);
-            SPEAK_BUTTON.addEventListener('click', () => speakTable()); 
+            SPEAK_BUTTON.addEventListener('click', speakTable); // Panggil fungsi utama suara
             MODE_TOGGLE_BUTTON.addEventListener('click', toggleQuizMode); 
             MULTIPLIER_SELECT.addEventListener('change', (event) => {
                 const newMultiplier = parseInt(event.target.value, 10);
@@ -800,11 +661,10 @@
                 }
             });
             SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
-            SIFIR_LIST.addEventListener('click', handleQuizClick); // Pasang handler kuiz
+            SIFIR_LIST.addEventListener('click', handleQuizClick); 
             
-            // HANYA log ini, tanpa Firebase Auth
             document.getElementById('user-id-display').textContent = `ID Pengguna: anon-github`;
-            console.log("App Initialized (GitHub Mode)");
+            console.log("App Initialized (Local TTS Mode)");
         }
         
         // --- 7. Inisialisasi Halaman (Page Initialization) ---

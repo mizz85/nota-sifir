@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota Sifir Beraudio</title>
+    <title>Nota Sifir Bercakap</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -23,21 +23,15 @@
             padding: 0.5rem 0;
             transition: background-color 0.2s;
         }
-        
-        /* Warna Primer: Bright Blue (Biru Elektrik, untuk fokus) */
         .text-prime {
-            color: #3b82f6; /* Blue 500 */
+            color: #3b82f6; 
         }
         .bg-prime {
             background-color: #3b82f6;
         }
-
-        /* Warna Jawapan: Vibrant Red (Kini digunakan untuk nombor faktor) */
         .text-maroon {
-            color: #EF4444; /* Vibrant Red (Red 500) */
+            color: #EF4444; 
         }
-        
-        /* Custom style untuk dropdown */
         #multiplier-select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -48,21 +42,23 @@
             background-position: right 1rem center;
             background-size: 1.5em;
         }
-        /* Style untuk Mod Kuiz */
         .answer-box {
-            font-size: 1.875rem; /* text-3xl */
+            font-size: 1.875rem; 
             line-height: 2.25rem;
-            font-weight: 800; /* font-extrabold */
+            font-weight: 800; 
         }
-        /* Style untuk skrin log masuk (pink) */
         .bg-login-card {
-            background-color: #ffe6f0; /* Pink lembut seperti dalam gambar */
+            background-color: #ffe6f0; 
         }
         .text-login-title {
-            color: #d11270; /* Pink/Maroon yang lebih gelap */
+            color: #d11270; 
         }
         .bg-login-button {
-            background-color: #eb3c8b; /* Pink cerah butang */
+            background-color: #eb3c8b; 
+        }
+        .answered {
+            cursor: default !important;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -77,8 +73,7 @@
                      onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
                 />
             </div>
-            <h1 class="text-4xl font-extrabold text-center mb-6 text-login-title">Nota Sifir Beraudio</h1>
-            
+            <h1 class="text-4xl font-extrabold text-center mb-6 text-login-title">Nota Sifir Bercakap</h1>
             <p class="text-center text-gray-700 mb-6">Akses terhad. Sila masukkan Kata Laluan untuk meneruskan.</p>
             
             <div class="mb-4">
@@ -111,16 +106,18 @@
             />
         </div>
 
-        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-6 text-prime">Nota Sifir Beraudio</h1>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-6 text-prime">Nota Sifir Bercakap</h1>
 
         <div class="bg-white p-3 mb-6 rounded-lg shadow-lg border-l-4 border-red-500">
             <p class="text-sm font-semibold text-red-600 mb-1">Penting:</p>
             <p class="text-xs text-gray-700">Kelajuan audio (suara) kini bergantung pada suara terbina dalam pelayar anda, menjadikannya lebih ringan dan pantas.</p>
         </div>
+
         <div id="sifir-card" class="card rounded-2xl p-6 md:p-8 border-4 border-pink-400">
             
             <div id="score-display" class="text-center font-bold mb-4 p-2 rounded-lg bg-green-100 border border-green-300 hidden">
-                Skor: <span id="current-score" class="text-green-800">0</span> / <span id="total-attempts" class="text-gray-600">0</span>
+                Skor: <span id="current-score" class="text-green-800">0</span> / <span id="total-attempts" class="text-gray-600">12</span>
+                <p id="remaining-questions" class="text-sm font-normal text-gray-700 mt-1">Soalan Belum Ditanya: 12</p>
             </div>
 
             <div class="flex justify-center mb-4">
@@ -152,11 +149,11 @@
             <div class="text-center mb-6">
                 <label for="multiplier-select" class="block text-lg font-medium text-gray-600 mb-2">Pilih Sifir Darab:</label>
                 <select id="multiplier-select" class="w-full max-w-xs mx-auto block text-center text-4xl font-extrabold text-white bg-prime border-4 border-prime rounded-xl p-2 shadow-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150">
-                    </select>
+                </select>
             </div>
 
             <div id="sifir-list" class="rounded-lg overflow-hidden border border-gray-200">
-                </div>
+            </div>
             
         </div>
 
@@ -175,7 +172,7 @@
 
     <script type="module">
         // --- 1. Konfigurasi dan Pembolehubah Global ---
-        const SECRET_PASSWORD = "notasifir5973"; 
+        const SECRET_PASSWORD = "notasifir1602"; 
         const WHATSAPP_NUMBER = "60198950339";
         
         let userId = 'anon-github'; 
@@ -183,8 +180,9 @@
         // Pembolehubah DOM untuk Log Masuk
         const LOGIN_SCREEN = document.getElementById('login-screen');
         const APP_CONTAINER = document.getElementById('app-container');
+        // KEKALKAN INI, TETAPI KITA AKAN TAMBAH LOGIK SOKONGAN UNTUK LOGIN_BUTTON DI BAWAH
         const PASSWORD_INPUT = document.getElementById('password-input');
-        const LOGIN_BUTTON = document.getElementById('login-button');
+        const LOGIN_BUTTON = document.getElementById('login-button'); // PASTIKAN PEMBOLEHUBAH INI DIGUNAKAN
         const LOGIN_MESSAGE = document.getElementById('login-message');
         
         // Pembolehubah DOM untuk Aplikasi Sifir
@@ -200,6 +198,7 @@
         const SCORE_DISPLAY = document.getElementById('score-display'); 
         const CURRENT_SCORE = document.getElementById('current-score'); 
         const TOTAL_ATTEMPTS = document.getElementById('total-attempts'); 
+        const REMAINING_QUESTIONS = document.getElementById('remaining-questions'); 
         
         // Pembolehubah Kawalan Bunyi
         const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
@@ -207,41 +206,49 @@
         const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
         const SOUND_TEXT = document.getElementById('sound-text');
         
-        let isSoundEnabled = true; // Status bunyi global
+        let isSoundEnabled = true; 
         let isSpeaking = false;
         let isQuizMode = false; 
         let currentMultiplier = 1;
         const MIN_MULTIPLIER = 1;
         const MAX_MULTIPLIER = 12;
 
-        let audioContext; // Untuk Web Audio API (Kesan Bunyi Sahaja)
+        let audioContext; 
         
         // Pembolehubah Skor Kuiz
         let score = 0;
-        let questionsAttempted = 0;
-        let quizTarget = null; // Menyimpan soalan semasa
+        const MAX_QUESTIONS = 12; 
+        let quizQuestionsLeft = []; 
+        let quizTarget = null; 
         
         // --- 2. Fungsi Log Masuk (Login Logic) ---
         
         function attemptLogin() {
+            // Logik tambahan untuk mengelakkan klik berganda
+            if (LOGIN_BUTTON.disabled) return;
+            LOGIN_BUTTON.disabled = true;
+
             const enteredPassword = PASSWORD_INPUT.value.trim().toLowerCase();
             
             if (enteredPassword === SECRET_PASSWORD) {
                 LOGIN_SCREEN.classList.add('hidden');
                 APP_CONTAINER.classList.remove('hidden');
-                // Panggil initApp untuk memulakan aplikasi sebenar selepas log masuk
+                // Sembunyikan mesej ralat jika log masuk berjaya
+                LOGIN_MESSAGE.classList.add('hidden');
                 initApp();
             } else {
                 LOGIN_MESSAGE.textContent = 'Kata laluan salah. Sila cuba lagi.';
                 LOGIN_MESSAGE.classList.remove('hidden');
-                PASSWORD_INPUT.value = ''; // Kosongkan input
+                PASSWORD_INPUT.value = ''; 
                 PASSWORD_INPUT.focus();
             }
+            
+            // Aktifkan semula butang selepas sedikit kelewatan
+            setTimeout(() => { LOGIN_BUTTON.disabled = false; }, 500);
         }
         
         // --- 3. Fungsi Bantuan Audio (Audio Helper Functions) ---
         
-        // Fungsi untuk menghentikan audio dan menetapkan semula UI
         function stopSpeaking() {
             if (window.speechSynthesis && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
@@ -253,21 +260,16 @@
             LOADING_SPINNER.classList.add('hidden'); 
         }
         
-        // Fungsi untuk memainkan kesan bunyi BETUL
         function playCorrectSound() {
             if (!isSoundEnabled) return;
-            // Nada tinggi (High-pitched tone)
             generateTone(700, 0.08, 0.1, 0.5); 
         }
 
-        // Fungsi untuk memainkan kesan bunyi SALAH
         function playWrongSound() {
             if (!isSoundEnabled) return;
-            // Nada rendah (Low-pitched tone)
             generateTone(200, 0.15, 0.3, 0.05); 
         }
 
-        // Fungsi Generik untuk menjana bunyi
         function generateTone(frequency, startVolume, endVolume, duration) {
             try {
                 if (!audioContext) {
@@ -282,18 +284,17 @@
 
                 oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
                 
-                // Attack and Decay
                 gainNode.gain.setValueAtTime(startVolume, audioContext.currentTime);
                 gainNode.gain.linearRampToValueAtTime(endVolume, audioContext.currentTime + duration);
 
                 oscillator.start();
                 oscillator.stop(audioContext.currentTime + duration);
             } catch (e) {
-                console.warn("Web Audio API tidak berfungsi. Tidak boleh memainkan kesan bunyi.");
+                // Tiada amaran jika ia adalah ralat biasa yang disekat oleh pelayar
+                // console.warn("Web Audio API tidak berfungsi. Tidak boleh memainkan kesan bunyi.");
             }
         }
 
-        /** Menjana dan memainkan kesan bunyi klik pendek menggunakan Web Audio API. */
         function playClickSound() {
             if (!isSoundEnabled) return;
             generateTone(440, 0.1, 0.001, 0.05);
@@ -304,7 +305,6 @@
         let voices = [];
         let voiceLoadInterval = null;
 
-        // Muatkan suara yang tersedia dalam pelayar
         function loadVoices() {
             voices = window.speechSynthesis.getVoices();
             if (voices.length > 0) {
@@ -312,39 +312,32 @@
             }
         }
 
-        // Cuba muatkan suara serta-merta dan teruskan memuatkan secara berkala
         loadVoices();
         if (window.speechSynthesis) {
             voiceLoadInterval = setInterval(loadVoices, 500);
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-
-        /** Menjana dan memainkan audio menggunakan Web Speech API. */
         function speakMalay(text) {
             if (!isSoundEnabled || !window.speechSynthesis) {
                 AUDIO_MESSAGE.textContent = 'Suara tidak disokong atau dimatikan.';
                 return;
             }
 
-            stopSpeaking(); // Batalkan mana-mana ucapan yang sedang berjalan
+            stopSpeaking(); 
             
             const utterance = new SpeechSynthesisUtterance(text);
             
-            // Konfigurasi TTS untuk nada yang ceria dan mesra
             utterance.rate = 1.0; 
             utterance.pitch = 1.1; 
             
-            // Logik untuk memilih suara perempuan yang diutamakan
             let preferredVoice = null;
             
-            // Kriteria 1: Cuba cari suara Melayu/Indonesia (ms/id) yang perempuan
             const malayFemaleVoice = voices.find(voice => 
                 (voice.lang.includes('ms') || voice.lang.includes('id')) && 
                 (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('perempuan') || voice.name.toLowerCase().includes('suri'))
             );
 
-            // Kriteria 2: Ambil sebarang suara perempuan yang mesra (seperti Google/Microsoft)
             const anyFemaleVoice = voices.find(voice => 
                 voice.name.toLowerCase().includes('female') || 
                 voice.name.toLowerCase().includes('perempuan') ||
@@ -352,16 +345,13 @@
                 voice.name.toLowerCase().includes('zira')
             );
             
-            // Kriteria 3: Ambil suara Melayu/Indonesia pertama (fallback)
             const malayVoice = voices.find(voice => voice.lang.includes('ms') || voice.lang.includes('id'));
 
             preferredVoice = malayFemaleVoice || anyFemaleVoice || malayVoice;
 
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
-            } else {
-                console.warn("Tiada suara perempuan/Melayu ditemui. Menggunakan suara lalai pelayar.");
-            }
+            } 
             
             isSpeaking = true;
             SPEAK_BUTTON.disabled = true;
@@ -369,8 +359,11 @@
             utterance.onend = () => {
                 isSpeaking = false;
                 SPEAK_BUTTON.disabled = false;
-                if (!isQuizMode) {
-                    SPEAK_TEXT.textContent = 'Baca Sifir Ini';
+                if (!isQuizMode || quizQuestionsLeft.length === 0) {
+                    SPEAK_TEXT.textContent = isQuizMode ? 'Sifir Selesai!' : 'Baca Sifir Ini';
+                    if (isQuizMode && quizQuestionsLeft.length === 0) {
+                         AUDIO_MESSAGE.textContent = `Tahniah! Sifir ${currentMultiplier} telah selesai. Skor akhir: ${score}/${MAX_QUESTIONS}`;
+                    }
                 }
             };
 
@@ -383,7 +376,6 @@
             window.speechSynthesis.speak(utterance);
         }
         
-        /** Menjana teks dan memainkan audio (Kuiz atau Nota). */
         function speakTable() {
             
             if (!isSoundEnabled) {
@@ -395,24 +387,28 @@
                 stopSpeaking();
                 return;
             }
+            
+            if (isQuizMode && quizQuestionsLeft.length === 0) {
+                AUDIO_MESSAGE.textContent = `Semua ${MAX_QUESTIONS} soalan sifir ${currentMultiplier} telah ditanya. Tukar sifir atau mod.`;
+                SPEAK_TEXT.textContent = 'Sifir Selesai!';
+                return;
+            }
 
-            // 1. Tetapkan Status Loading UI
             SPEAK_TEXT.textContent = 'Bercakap... (Klik untuk berhenti)';
             
             let textToSpeak;
             if (isQuizMode) {
-                // Logik Kuiz: Tanya soalan rawak dari sifir semasa
-                const factor2 = Math.floor(Math.random() * 12) + 1;
+                const randomIndex = Math.floor(Math.random() * quizQuestionsLeft.length);
+                const factor2 = quizQuestionsLeft[randomIndex]; 
+                
                 const result = currentMultiplier * factor2;
                 
-                quizTarget = { factor1: currentMultiplier, factor2: factor2, result: result };
+                quizTarget = { factor1: currentMultiplier, factor2: factor2, result: result, questionIndex: randomIndex }; 
                 textToSpeak = `${currentMultiplier} darab ${factor2} sama dengan berapa? Jawab sekarang.`;
                 
-                // Pastikan butang Kuiz menunjukkan soalan
                 SPEAK_TEXT.textContent = `Sila Jawab: ${currentMultiplier} x ${factor2} = ?`;
 
             } else {
-                // Logik Nota: Baca semua sifir
                 textToSpeak = `Ini ialah sifir darab ${currentMultiplier}. `;
                 for (let i = 1; i <= 12; i++) {
                     textToSpeak += `${currentMultiplier} darab ${i} sama dengan ${currentMultiplier * i}. `;
@@ -420,19 +416,24 @@
                 textToSpeak += `Itu sahaja sifir ${currentMultiplier}.`; 
             }
             
-            // 2. Panggil fungsi Web Speech API yang ringan
             speakMalay(textToSpeak);
         }
 
         // --- 5. Logik Aplikasi Utama (Main App Logic) ---
         
-        /** Mengemas kini paparan skor di UI. */
         function updateScoreDisplay() {
             CURRENT_SCORE.textContent = score;
-            TOTAL_ATTEMPTS.textContent = questionsAttempted;
+            TOTAL_ATTEMPTS.textContent = MAX_QUESTIONS; 
+            REMAINING_QUESTIONS.textContent = `Soalan Belum Ditanya: ${quizQuestionsLeft.length}`;
+        }
+        
+        function resetQuizForMultiplier() {
+            quizQuestionsLeft = Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1);
+            score = 0;
+            quizTarget = null;
+            updateScoreDisplay();
         }
 
-        /** Mengisi menu lungsur dengan sifir 1 hingga 12. */
         function populateMultiplierSelect() {
             MULTIPLIER_SELECT.innerHTML = '';
             for (let i = MIN_MULTIPLIER; i <= MAX_MULTIPLIER; i++) {
@@ -443,47 +444,36 @@
             }
         }
 
-        // Fungsi untuk menukar mod
         function toggleQuizMode() {
             isQuizMode = !isQuizMode;
             
             if (isQuizMode) {
-                // Masuk Mod Kuiz
                 MODE_TOGGLE_BUTTON.textContent = 'Tukar ke Mod Nota';
                 MODE_TOGGLE_BUTTON.classList.remove('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
                 MODE_TOGGLE_BUTTON.classList.add('bg-pink-500', 'hover:bg-pink-600', 'text-white');
-                SPEAK_TEXT.textContent = 'Tanya Soalan'; // Tukar teks butang cakap
-                SCORE_DISPLAY.classList.remove('hidden'); // Tunjuk skor
+                SPEAK_TEXT.textContent = 'Tanya Soalan'; 
+                SCORE_DISPLAY.classList.remove('hidden'); 
                 
-                // Tetapkan semula skor apabila memulakan mod kuiz
-                score = 0;
-                questionsAttempted = 0;
-                updateScoreDisplay();
-                quizTarget = null; // Kosongkan sasaran soalan
+                resetQuizForMultiplier(); 
             } else {
-                // Keluar Mod Kuiz
                 MODE_TOGGLE_BUTTON.textContent = 'Tukar ke Mod Kuiz';
                 MODE_TOGGLE_BUTTON.classList.add('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
-                SPEAK_TEXT.textContent = 'Baca Sifir Ini'; // Tukar teks butang cakap
-                SCORE_DISPLAY.classList.add('hidden'); // Sembunyikan skor
+                SPEAK_TEXT.textContent = 'Baca Sifir Ini'; 
+                SCORE_DISPLAY.classList.add('hidden'); 
             }
             
-            // Hentikan bacaan apabila mod ditukar
             stopSpeaking(); 
             updateSifirDisplay();
         }
 
-        /** Mengemas kini UI butang kawalan bunyi */
         function updateSoundToggleUI() {
             if (isSoundEnabled) {
-                // Sound is ON (Bunyi)
                 SOUND_ICON_ON.classList.remove('hidden');
                 SOUND_ICON_OFF.classList.add('hidden');
                 SOUND_TEXT.textContent = 'Bunyi'; 
                 SOUND_TOGGLE_BUTTON.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
                 SOUND_TOGGLE_BUTTON.classList.add('bg-green-100', 'hover:bg-green-200', 'text-green-700');
             } else {
-                // Sound is OFF (Senyap)
                 SOUND_ICON_ON.classList.add('hidden');
                 SOUND_ICON_OFF.classList.remove('hidden');
                 SOUND_TEXT.textContent = 'Senyap'; 
@@ -492,36 +482,38 @@
             }
         }
 
-        /** Mengemas kini paparan sifir di UI. */
         function updateSifirDisplay() {
-            MULTIPLIER_SELECT.value = currentMultiplier; // KEMAS KINI DROPDOWN
+            MULTIPLIER_SELECT.value = currentMultiplier; 
 
             SIFIR_LIST.innerHTML = '';
             
+            const answeredFactors = isQuizMode ? 
+                Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1)
+                .filter(factor => !quizQuestionsLeft.includes(factor)) : [];
+
             for (let i = 1; i <= 12; i++) {
                 const result = currentMultiplier * i;
                 const equationDiv = document.createElement('div');
-                
-                // Warna latar belakang berselang-seli yang ceria
                 const rowClass = i % 2 !== 0 ? 'bg-pink-50' : 'bg-green-50'; 
                 
                 equationDiv.className = `equation flex justify-between items-center p-3 md:px-5 font-mono ${rowClass} hover:bg-yellow-100 transition duration-100`;
                 
-                // Menambah pendengar acara untuk bunyi sentuhan/hover
                 equationDiv.addEventListener('mouseover', playClickSound);
                 equationDiv.addEventListener('touchstart', playClickSound);
                 
                 let answerHtml;
                 
                 if (isQuizMode) {
-                    // Mod Kuiz: Jawapan disembunyikan
-                    // data-factor2 untuk mengenal pasti baris
+                    const isAnswered = answeredFactors.includes(i);
+                    const answeredClass = isAnswered ? 'bg-green-500 text-white answered' : 'bg-gray-200 text-gray-200 hover:bg-gray-300 hover:text-gray-300 cursor-pointer';
+
                     answerHtml = `<span 
                                     data-result="${result}"
                                     data-factor2="${i}"
-                                    class="answer-box bg-gray-200 text-gray-200 font-extrabold select-none px-4 rounded-md cursor-pointer text-3xl transition duration-200 hover:bg-gray-300 hover:text-gray-300">?</span>`;
+                                    class="answer-box font-extrabold select-none px-4 rounded-md text-3xl transition duration-200 ${answeredClass}">
+                                    ${isAnswered ? result : '?'}
+                                  </span>`;
                 } else {
-                    // Mod Nota: Jawapan ditunjukkan
                     answerHtml = `<span class="font-extrabold text-green-800 text-3xl">${result}</span>`;
                 }
                 
@@ -535,100 +527,92 @@
                 SIFIR_LIST.appendChild(equationDiv);
             }
 
-            // Kemas kini status butang navigasi
             PREV_BUTTON.disabled = currentMultiplier === MIN_MULTIPLIER;
             NEXT_BUTTON.disabled = currentMultiplier === MAX_MULTIPLIER;
+            
+            if (isQuizMode) {
+                 SPEAK_BUTTON.disabled = quizQuestionsLeft.length === 0;
+            } else {
+                 SPEAK_BUTTON.disabled = false;
+            }
 
-            // Hentikan sebarang audio sedia ada 
             stopSpeaking();
+            if (isQuizMode) updateScoreDisplay();
         }
 
-        /** Menetapkan pendarab (multiplier) seterusnya. */
         function goToNextSifir() {
             if (currentMultiplier < MAX_MULTIPLIER) {
                 currentMultiplier++;
-                // Tetapkan semula kuiz dan skor apabila sifir ditukar
-                score = 0; questionsAttempted = 0; quizTarget = null;
-                updateScoreDisplay();
+                resetQuizForMultiplier(); 
                 updateSifirDisplay();
             }
         }
 
-        /** Menetapkan pendarab (multiplier) sebelumnya. */
         function goToPrevSifir() {
             if (currentMultiplier > MIN_MULTIPLIER) {
                 currentMultiplier--;
-                // Tetapkan semula kuiz dan skor apabila sifir ditukar
-                score = 0; questionsAttempted = 0; quizTarget = null;
-                updateScoreDisplay();
+                resetQuizForMultiplier(); 
                 updateSifirDisplay();
             }
         }
         
-        /** Logik toggle bunyi */
         function toggleSound() {
             isSoundEnabled = !isSoundEnabled;
             updateSoundToggleUI();
-            stopSpeaking(); // Hentikan TTS jika dimatikan
+            stopSpeaking(); 
             
-            // Cuba untuk meneruskan AudioContext jika ia baru sahaja dihidupkan
             if (isSoundEnabled && audioContext && audioContext.state === 'suspended') {
                 audioContext.resume().catch(e => console.error("Ralat semasa resume AudioContext:", e));
             }
         }
 
-        // Logik Kuiz: Pemarkahan dan Pendedahan Jawapan
         function handleQuizClick(event) {
             if (!isQuizMode) return;
             
             const clickedElement = event.target.closest('.answer-box');
             
-            if (clickedElement) {
-                const isHidden = clickedElement.classList.contains('bg-gray-200');
+            if (clickedElement && !clickedElement.classList.contains('answered')) {
+                const clickedFactor2 = parseInt(clickedElement.getAttribute('data-factor2'), 10);
                 const clickedResult = parseInt(clickedElement.getAttribute('data-result'), 10);
                 
-                if (isHidden) {
-                    if (!quizTarget) {
-                        AUDIO_MESSAGE.textContent = 'Sila tekan "Tanya Soalan" dahulu.';
-                        playWrongSound();
-                        return;
-                    }
+                if (quizTarget && clickedFactor2 === quizTarget.factor2) {
+                    score++;
+                    playCorrectSound();
+                    AUDIO_MESSAGE.textContent = `BETUL! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
                     
-                    if (clickedResult === quizTarget.result) {
-                        // JAWAPAN BETUL!
-                        score++;
-                        questionsAttempted++; 
-                        playCorrectSound();
-                        AUDIO_MESSAGE.textContent = `BETUL! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
-                        
-                        // Dedahkan jawapan secara kekal
-                        clickedElement.textContent = clickedResult;
-                        clickedElement.classList.remove('bg-gray-200', 'text-gray-200', 'hover:bg-gray-300', 'hover:text-gray-300');
-                        clickedElement.classList.add('bg-green-500', 'text-white');
-                        clickedElement.classList.remove('cursor-pointer');
-                        
-                        // Tetapkan semula soalan sasaran
-                        quizTarget = null;
+                    quizQuestionsLeft.splice(quizTarget.questionIndex, 1);
+                    
+                    clickedElement.textContent = clickedResult;
+                    clickedElement.classList.remove('bg-gray-200', 'text-gray-200', 'hover:bg-gray-300', 'hover:text-gray-300', 'cursor-pointer');
+                    clickedElement.classList.add('bg-green-500', 'text-white', 'answered');
+                    
+                    quizTarget = null;
+                    
+                    updateScoreDisplay(); 
+                    if (quizQuestionsLeft.length > 0) {
                         SPEAK_TEXT.textContent = 'Tanya Soalan';
-                        
                     } else {
-                        // JAWAPAN SALAH
-                        questionsAttempted++; 
-                        playWrongSound();
-                        AUDIO_MESSAGE.textContent = 'Salah, cuba lagi!';
-                        
-                        // Flash merah
-                        clickedElement.classList.remove('bg-gray-200', 'hover:bg-gray-300');
-                        clickedElement.classList.add('bg-red-500', 'hover:bg-red-500');
-
-                        // Kembalikan kepada warna asal selepas 500ms
-                        setTimeout(() => {
-                            clickedElement.classList.remove('bg-red-500', 'hover:bg-red-500');
-                            clickedElement.classList.add('bg-gray-200', 'hover:bg-gray-300');
-                        }, 500); 
+                         SPEAK_BUTTON.disabled = true;
+                         SPEAK_TEXT.textContent = 'Sifir Selesai!';
+                         AUDIO_MESSAGE.textContent += ` (Sifir ${currentMultiplier} SELESAI!)`;
                     }
                     
-                    updateScoreDisplay(); // Kemas kini paparan skor
+                } else if (!quizTarget) {
+                    AUDIO_MESSAGE.textContent = 'Sila tekan "Tanya Soalan" dahulu.';
+                    playWrongSound();
+                    
+                } else {
+                    playWrongSound();
+                    AUDIO_MESSAGE.textContent = 'Salah. Anda klik soalan lain. Soalan semasa ialah ' + 
+                                                `${quizTarget.factor1} x ${quizTarget.factor2}`;
+                    
+                    clickedElement.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                    clickedElement.classList.add('bg-red-500', 'hover:bg-red-500');
+
+                    setTimeout(() => {
+                        clickedElement.classList.remove('bg-red-500', 'hover:bg-red-500');
+                        clickedElement.classList.add('bg-gray-200', 'hover:bg-gray-300');
+                    }, 500); 
                 }
             }
         }
@@ -637,26 +621,21 @@
         // --- 6. Inisialisasi Aplikasi (Initialization) ---
         
         async function initApp() {
-            // Sediakan status awal UI kawalan bunyi
             updateSoundToggleUI();
-
-            // Isikan dropdown sebelum memulakan paparan
             populateMultiplierSelect(); 
-            
-            // Mulakan paparan aplikasi Sifir (selepas log masuk)
+            resetQuizForMultiplier(); 
             updateSifirDisplay(); 
             
             // Daftarkan Pendengar Acara Aplikasi Sifir
             NEXT_BUTTON.addEventListener('click', goToNextSifir);
             PREV_BUTTON.addEventListener('click', goToPrevSifir);
-            SPEAK_BUTTON.addEventListener('click', speakTable); // Panggil fungsi utama suara
+            SPEAK_BUTTON.addEventListener('click', speakTable); 
             MODE_TOGGLE_BUTTON.addEventListener('click', toggleQuizMode); 
             MULTIPLIER_SELECT.addEventListener('change', (event) => {
                 const newMultiplier = parseInt(event.target.value, 10);
                 if (!isNaN(newMultiplier) && newMultiplier >= MIN_MULTIPLIER && newMultiplier <= MAX_MULTIPLIER) {
                     currentMultiplier = newMultiplier;
-                    score = 0; questionsAttempted = 0; quizTarget = null;
-                    updateScoreDisplay();
+                    resetQuizForMultiplier(); 
                     updateSifirDisplay();
                 }
             });
@@ -664,22 +643,31 @@
             SIFIR_LIST.addEventListener('click', handleQuizClick); 
             
             document.getElementById('user-id-display').textContent = `ID Pengguna: anon-github`;
-            console.log("App Initialized (Local TTS Mode)");
+            console.log("App Initialized (Local TTS & Quiz 12 Mode)");
         }
         
         // --- 7. Inisialisasi Halaman (Page Initialization) ---
         
         window.onload = function() {
-            // Mulakan dengan memasang pendengar acara log masuk
-            LOGIN_BUTTON.addEventListener('click', attemptLogin);
-            PASSWORD_INPUT.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    attemptLogin();
-                }
-            });
+            // **PERUBAHAN UTAMA DI SINI:** Menggunakan pembolehubah DOM yang telah ditetapkan
+            if (LOGIN_BUTTON) {
+                LOGIN_BUTTON.addEventListener('click', attemptLogin);
+            } else {
+                 console.error("Ralat: Elemen 'login-button' tidak ditemui.");
+            }
+            
+            if (PASSWORD_INPUT) {
+                 PASSWORD_INPUT.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        attemptLogin();
+                    }
+                });
 
-            // Pastikan fokus pada input kata laluan apabila dimuat
-            PASSWORD_INPUT.focus();
+                // Pastikan fokus pada input kata laluan apabila dimuat
+                PASSWORD_INPUT.focus();
+            } else {
+                 console.error("Ralat: Elemen 'password-input' tidak ditemui.");
+            }
         };
 
     </script>

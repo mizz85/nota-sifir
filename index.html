@@ -69,8 +69,7 @@
             <div class="flex justify-center mb-2">
                 <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
                      alt="Logo Syarikat Anda" 
-                     class="w-24 h-24" 
-                     onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
+                     class="w-32 h-32" onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
                 />
             </div>
             <h1 class="text-4xl font-extrabold text-center mb-6 text-login-title">Nota Sifir Bercakap</h1>
@@ -101,18 +100,29 @@
         <div class="flex justify-center mb-4">
             <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
                  alt="Logo Syarikat Anda" 
-                 class="w-24 h-24" 
-                 onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
+                 class="w-32 h-32" onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
             />
         </div>
 
         <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-6 text-prime">Nota Sifir Bercakap</h1>
 
-        <div class="bg-white p-3 mb-6 rounded-lg shadow-lg border-l-4 border-red-500">
-            <p class="text-sm font-semibold text-red-600 mb-1">Penting:</p>
-            <p class="text-xs text-gray-700">Kelajuan audio (suara) kini bergantung pada suara terbina dalam pelayar anda, menjadikannya lebih ringan dan pantas.</p>
+        <div class="p-0 mb-6 rounded-lg">
+            <button id="tts-info-toggle" class="w-full flex justify-between items-center bg-red-100 hover:bg-red-200 p-3 rounded-lg shadow-md border-l-4 border-red-500 transition duration-150">
+                <span class="text-sm font-semibold text-red-600">
+                    <b>PENTING:</b> Suara kuiz berbeza; ikut tetapan sebutan peranti anda.
+                </span>
+                <svg id="tts-info-icon" class="w-5 h-5 text-red-600 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="tts-info-content" class="hidden mt-2 p-3 bg-white border border-red-300 rounded-lg shadow-inner">
+                <p class="text-sm font-medium text-gray-700 mb-2">Jika suara kuiz berbunyi pelik, sila tukar tetapan sebutan (TTS) anda:</p>
+                <ol class="list-decimal list-inside text-sm text-gray-600 space-y-2 pl-4">
+                    <li>Buka <b>Tetapan</b> (Settings) telefon/peranti anda.</li>
+                    <li>Guna fungsi <b>Carian</b> (Search) dan taip: <span class="font-mono bg-yellow-100 p-0.5 rounded">Text-to-Speech</span>.</li>
+                    <li>Pilih hasil carian <b>"Output Teks-ke-Pertuturan"</b> tersebut.</li>
+                    <li>Pastikan tetapan <b>"Bahasa"</b> diubah kepada <b>"Bahasa Melayu"</b>.</li>
+                </ol>
+            </div>
         </div>
-
         <div id="sifir-card" class="card rounded-2xl p-6 md:p-8 border-4 border-pink-400">
             
             <div id="score-display" class="text-center font-bold mb-4 p-2 rounded-lg bg-green-100 border border-green-300 hidden">
@@ -167,12 +177,11 @@
                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
         </div>
-        <p id="user-id-display" class="text-xs text-gray-500 text-center mt-4"></p>
-    </div>
+        </div>
 
     <script type="module">
         // --- 1. Konfigurasi dan Pembolehubah Global ---
-        const SECRET_PASSWORD = "notasifir1602"; 
+        const SECRET_PASSWORD = "notasifir5973"; 
         const WHATSAPP_NUMBER = "60198950339";
         
         let userId = 'anon-github'; 
@@ -180,9 +189,8 @@
         // Pembolehubah DOM untuk Log Masuk
         const LOGIN_SCREEN = document.getElementById('login-screen');
         const APP_CONTAINER = document.getElementById('app-container');
-        // KEKALKAN INI, TETAPI KITA AKAN TAMBAH LOGIK SOKONGAN UNTUK LOGIN_BUTTON DI BAWAH
         const PASSWORD_INPUT = document.getElementById('password-input');
-        const LOGIN_BUTTON = document.getElementById('login-button'); // PASTIKAN PEMBOLEHUBAH INI DIGUNAKAN
+        const LOGIN_BUTTON = document.getElementById('login-button'); 
         const LOGIN_MESSAGE = document.getElementById('login-message');
         
         // Pembolehubah DOM untuk Aplikasi Sifir
@@ -205,6 +213,11 @@
         const SOUND_ICON_ON = document.getElementById('sound-icon-on');
         const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
         const SOUND_TEXT = document.getElementById('sound-text');
+        
+        // Pembolehubah untuk Dropdown Baru
+        const TTS_INFO_TOGGLE = document.getElementById('tts-info-toggle');
+        const TTS_INFO_CONTENT = document.getElementById('tts-info-content');
+        const TTS_INFO_ICON = document.getElementById('tts-info-icon');
         
         let isSoundEnabled = true; 
         let isSpeaking = false;
@@ -617,6 +630,17 @@
             }
         }
 
+        // Fungsi Baru untuk Mengendalikan Dropdown TTS
+        function toggleTTSInfo() {
+            const isHidden = TTS_INFO_CONTENT.classList.contains('hidden');
+            if (isHidden) {
+                TTS_INFO_CONTENT.classList.remove('hidden');
+                TTS_INFO_ICON.classList.add('rotate-180'); 
+            } else {
+                TTS_INFO_CONTENT.classList.add('hidden');
+                TTS_INFO_ICON.classList.remove('rotate-180');
+            }
+        }
 
         // --- 6. Inisialisasi Aplikasi (Initialization) ---
         
@@ -642,7 +666,9 @@
             SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
             SIFIR_LIST.addEventListener('click', handleQuizClick); 
             
-            document.getElementById('user-id-display').textContent = `ID Pengguna: anon-github`;
+            // Daftarkan Pendengar Acara untuk Butang TTS Baru
+            TTS_INFO_TOGGLE.addEventListener('click', toggleTTSInfo);
+            
             console.log("App Initialized (Local TTS & Quiz 12 Mode)");
         }
         

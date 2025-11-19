@@ -88,7 +88,9 @@
             </button>
 
             <div class="text-center mt-6">
-                <a href="https://wa.me/60198950339" target="_blank" class="text-sm font-semibold text-green-600 hover:text-green-700 underline transition duration-150">
+                <a href="https://wa.me/60198950339?text=Assalamualaikum%2FHai.%0ANak%20minta%20kata%20laluan%2Fpassword%20Nota%20Sifir%20Bercakap%20boleh%3F%0ANama%20saya%20(Nama%20Pelajar%2FIbu%20Bapa)." 
+                   target="_blank" 
+                   class="text-sm font-semibold text-green-600 hover:text-green-700 underline transition duration-150">
                     Lupa kata laluan atau nak kata laluan? (Whatsapp Mizz)
                 </a>
             </div>
@@ -188,26 +190,29 @@
                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
         </div>
+        
+        <button id="logout-button" class="w-full mt-8 bg-red-500 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.01]">
+            Log Keluar / Logout
+        </button>
     </div>
 
     <script type="module">
         // --- 1. Konfigurasi dan Pembolehubah Global ---
         const SECRET_PASSWORD = "notasifir5973"; 
-        const WHATSAPP_NUMBER = "60198950339";
         
         // Pembolehubah Bahasa Baru
-        let currentLanguage = 'ms'; // 'ms' untuk Melayu, 'en' untuk English
-        const LANG_MS_BUTTON = document.getElementById('lang-ms-button');
-        const LANG_EN_BUTTON = document.getElementById('lang-en-button');
+        let currentLanguage = 'ms'; 
         
-        // Pembolehubah DOM untuk Log Masuk
+        // Pembolehubah DOM untuk Log Masuk (Diperlukan oleh window.onload)
         const LOGIN_SCREEN = document.getElementById('login-screen');
         const APP_CONTAINER = document.getElementById('app-container');
         const PASSWORD_INPUT = document.getElementById('password-input');
         const LOGIN_BUTTON = document.getElementById('login-button'); 
         const LOGIN_MESSAGE = document.getElementById('login-message');
         
-        // Pembolehubah DOM untuk Aplikasi Sifir
+        // Pembolehubah DOM Aplikasi Sifir (Diperlukan oleh initApp)
+        const LANG_MS_BUTTON = document.getElementById('lang-ms-button');
+        const LANG_EN_BUTTON = document.getElementById('lang-en-button');
         const SPEAK_BUTTON = document.getElementById('speak-button');
         const SPEAK_TEXT = document.getElementById('speak-text');
         const LOADING_SPINNER = document.getElementById('loading-spinner');
@@ -221,18 +226,18 @@
         const CURRENT_SCORE = document.getElementById('current-score'); 
         const TOTAL_ATTEMPTS = document.getElementById('total-attempts'); 
         const REMAINING_QUESTIONS = document.getElementById('remaining-questions'); 
-        
-        // Pembolehubah Kawalan Bunyi
         const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
         const SOUND_ICON_ON = document.getElementById('sound-icon-on');
         const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
         const SOUND_TEXT = document.getElementById('sound-text');
-        
-        // Pembolehubah untuk Dropdown Baru
         const TTS_INFO_TOGGLE = document.getElementById('tts-info-toggle');
         const TTS_INFO_CONTENT = document.getElementById('tts-info-content');
         const TTS_INFO_ICON = document.getElementById('tts-info-icon');
         
+        // Pembolehubah Butang Log Keluar
+        const LOGOUT_BUTTON = document.getElementById('logout-button'); 
+        
+        // Pembolehubah Kawalan
         let isSoundEnabled = true; 
         let isSpeaking = false;
         let isQuizMode = false; 
@@ -241,14 +246,41 @@
         const MAX_MULTIPLIER = 12;
 
         let audioContext; 
-        
-        // Pembolehubah Skor Kuiz
         let score = 0;
         const MAX_QUESTIONS = 12; 
         let quizQuestionsLeft = []; 
         let quizTarget = null; 
         
-        // --- 2. Fungsi Log Masuk (Login Logic) ---
+        // --- 2. Fungsi Bantuan Bahasa & Logik ---
+
+        function numberToEnglishWords(num) {
+            if (num === 0) return 'zero';
+            if (num > 1000) return num.toString(); 
+            
+            const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+            const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+            
+            if (num < 20) return units[num];
+            if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + units[num % 10] : '');
+            
+            const h = Math.floor(num / 100);
+            const rem = num % 100;
+            let str = units[h] + ' hundred';
+            if (rem > 0) {
+                str += ' and ' + numberToEnglishWords(rem); 
+            }
+            return str.trim(); 
+        }
+
+        function getSpelledEnglish(num1, num2) {
+            const result = num1 * num2;
+            const num1Spelled = numberToEnglishWords(num1);
+            const num2Spelled = numberToEnglishWords(num2);
+            const resultSpelled = numberToEnglishWords(result);
+            return { num1Spelled, num2Spelled, resultSpelled };
+        }
+
+        // --- 3. Logik Log Masuk & Log Keluar ---
         
         function attemptLogin() {
             if (LOGIN_BUTTON.disabled) return;
@@ -271,7 +303,24 @@
             setTimeout(() => { LOGIN_BUTTON.disabled = false; }, 500);
         }
         
-        // --- 3. Fungsi Bantuan Audio (Audio Helper Functions) ---
+        // FUNGSI LOGOUT YANG DIGUNAKAN OLEH EVENT LISTENER
+        function logout() {
+            stopSpeaking(); 
+            
+            APP_CONTAINER.classList.add('hidden');
+            LOGIN_SCREEN.classList.remove('hidden');
+            
+            PASSWORD_INPUT.value = '';
+            LOGIN_MESSAGE.classList.add('hidden');
+            PASSWORD_INPUT.focus();
+            
+            // Kembali ke mod Nota
+            if (isQuizMode) {
+                toggleQuizMode(); 
+            }
+        }
+        
+        // --- 4. Fungsi Audio & TTS (TTS & Bunyi) ---
         
         function stopSpeaking() {
             if (window.speechSynthesis && window.speechSynthesis.speaking) {
@@ -279,7 +328,6 @@
             }
             isSpeaking = false;
             
-            // Perbaharui teks butang berdasarkan bahasa dan mod
             SPEAK_TEXT.textContent = isQuizMode ? 
                 (currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question') : 
                 (currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table');
@@ -319,7 +367,7 @@
                 oscillator.start();
                 oscillator.stop(audioContext.currentTime + duration);
             } catch (e) {
-                // ...
+                // Ignore audio context errors on some mobile browsers
             }
         }
 
@@ -328,8 +376,6 @@
             generateTone(440, 0.1, 0.001, 0.05);
         }
 
-        // --- 4. Logik Teks-ke-Ucapan (Web Speech API) ---
-        
         let voices = [];
         let voiceLoadInterval = null;
 
@@ -380,9 +426,12 @@
                 utterance.rate = 1.0; 
                 utterance.pitch = 1.0;
                 
-                const englishVoice = voices.find(voice => voice.lang.includes('en'));
-                
-                preferredVoice = englishVoice;
+                const englishVoice = voices.find(voice => 
+                    voice.lang.includes('en') && 
+                    (voice.name.toLowerCase().includes('us') || voice.name.toLowerCase().includes('united states') || voice.name.toLowerCase().includes('uk'))
+                );
+
+                preferredVoice = englishVoice || voices.find(voice => voice.lang.includes('en'));
                 
                 if (preferredVoice) {
                     utterance.voice = preferredVoice;
@@ -422,7 +471,6 @@
         }
         
         function speakTable() {
-            
             if (!isSoundEnabled) {
                 AUDIO_MESSAGE.textContent = currentLanguage === 'ms' ? 'Bunyi dimatikan.' : 'Sound is muted.';
                 return;
@@ -449,14 +497,16 @@
             if (isQuizMode) {
                 const randomIndex = Math.floor(Math.random() * quizQuestionsLeft.length);
                 const factor2 = quizQuestionsLeft[randomIndex]; 
-                
                 const result = currentMultiplier * factor2;
                 
                 quizTarget = { factor1: currentMultiplier, factor2: factor2, result: result, questionIndex: randomIndex }; 
                 
-                textToSpeak = currentLanguage === 'ms' ? 
-                    `${currentMultiplier} darab ${factor2} sama dengan berapa? Jawab sekarang.` : 
-                    `${currentMultiplier} times ${factor2} equals what? Answer now.`;
+                if (currentLanguage === 'ms') {
+                    textToSpeak = `${currentMultiplier} darab ${factor2} sama dengan berapa? Jawab sekarang.`;
+                } else { 
+                    const { num1Spelled, num2Spelled } = getSpelledEnglish(currentMultiplier, factor2);
+                    textToSpeak = `${num1Spelled} times ${num2Spelled} equals what? Answer now.`;
+                }
                 
                 SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 
                     `Sila Jawab: ${currentMultiplier} x ${factor2} = ?` : 
@@ -469,19 +519,21 @@
                         textToSpeak += `${currentMultiplier} darab ${i} sama dengan ${currentMultiplier * i}. `;
                     }
                     textToSpeak += `Itu sahaja sifir ${currentMultiplier}.`; 
-                } else { // English
-                    textToSpeak = `This is the ${currentMultiplier} times table. `;
+                } else { 
+                    const currentMultiplierSpelled = numberToEnglishWords(currentMultiplier);
+                    textToSpeak = `This is the ${currentMultiplierSpelled} times table. `;
                     for (let i = 1; i <= 12; i++) {
-                        textToSpeak += `${currentMultiplier} times ${i} equals ${currentMultiplier * i}. `;
+                        const { num2Spelled, resultSpelled } = getSpelledEnglish(currentMultiplier, i);
+                        textToSpeak += `${currentMultiplierSpelled} times ${num2Spelled} equals ${resultSpelled}. `;
                     }
-                    textToSpeak += `That is the ${currentMultiplier} times table.`; 
+                    textToSpeak += `That is the ${currentMultiplierSpelled} times table.`; 
                 }
             }
             
             speakText(textToSpeak, currentLanguage);
         }
 
-        // --- 5. Logik Aplikasi Utama (Main App Logic) ---
+        // --- 5. Logik Aplikasi Utama (UI/Mode Logic) ---
         
         function updateScoreDisplay() {
             CURRENT_SCORE.textContent = score;
@@ -509,32 +561,30 @@
         }
 
         function updateUIText() {
-            // Mengemas kini teks untuk elemen statik
+            // KEMAS KINI TEKS LOG KELUAR
+            LOGOUT_BUTTON.textContent = currentLanguage === 'ms' ? 'Log Keluar / Logout' : 'Logout';
+            
             document.querySelector('h1').textContent = currentLanguage === 'ms' ? 'Nota Sifir Bercakap' : 'Speaking Times Table';
             
-            // Logik untuk Mode Toggle
             if (isQuizMode) {
                 MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Nota' : 'Switch to Note Mode';
-                SPEAK_TEXT.textContent = 'Tanya Soalan'; 
+                SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question'; 
             } else {
                 MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Kuiz' : 'Switch to Quiz Mode';
                 SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table'; 
             }
             
-            // Logik untuk butang Next/Prev
             PREV_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Sebelum' : 'Previous';
             NEXT_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Seterusnya' : 'Next';
             document.querySelector('label[for="multiplier-select"]').textContent = currentLanguage === 'ms' ? 'Pilih Sifir Darab:' : 'Select Times Table:';
 
-            // Mengemaskini paparan skor
             if (isQuizMode) {
                 document.querySelector('#score-display').firstChild.textContent = currentLanguage === 'ms' ? 'Skor: ' : 'Score: ';
             }
             
-            // Memperbaharui dropdown sifir
             populateMultiplierSelect();
             updateSifirDisplay();
-            updateScoreDisplay(); // Untuk mengemas kini teks soalan yang tinggal
+            updateScoreDisplay(); 
         }
         
         function toggleLanguage(lang) {
@@ -542,7 +592,6 @@
             currentLanguage = lang;
             stopSpeaking(); 
             
-            // Kemas kini UI butang bahasa
             if (lang === 'ms') {
                 LANG_MS_BUTTON.classList.add('bg-prime', 'hover:bg-blue-600', 'text-white');
                 LANG_MS_BUTTON.classList.remove('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
@@ -578,7 +627,6 @@
         }
 
         function updateSoundToggleUI() {
-            // ... (Kekalkan fungsi ini)
             if (isSoundEnabled) {
                 SOUND_ICON_ON.classList.remove('hidden');
                 SOUND_ICON_OFF.classList.add('hidden');
@@ -648,8 +696,6 @@
                  SPEAK_BUTTON.disabled = false;
             }
 
-            // Tidak perlu stopSpeaking di sini, kerana ia sudah dipanggil dalam toggleLanguage/updateUIText
-            // stopSpeaking();
             if (isQuizMode) updateScoreDisplay();
         }
 
@@ -743,7 +789,6 @@
             }
         }
 
-        // Fungsi Baru untuk Mengendalikan Dropdown TTS
         function toggleTTSInfo() {
             const isHidden = TTS_INFO_CONTENT.classList.contains('hidden');
             if (isHidden) {
@@ -758,17 +803,15 @@
         // --- 6. Inisialisasi Aplikasi (Initialization) ---
         
         async function initApp() {
-            // Tetapkan bahasa awal (Melayu)
             toggleLanguage('ms'); 
             
-            // Inisialisasi UI
             updateSoundToggleUI();
             populateMultiplierSelect(); 
             resetQuizForMultiplier(); 
             updateSifirDisplay(); 
             updateUIText(); 
             
-            // Daftarkan Pendengar Acara Aplikasi Sifir
+            // Daftarkan Pendengar Acara Aplikasi
             NEXT_BUTTON.addEventListener('click', goToNextSifir);
             PREV_BUTTON.addEventListener('click', goToPrevSifir);
             SPEAK_BUTTON.addEventListener('click', speakTable); 
@@ -783,15 +826,11 @@
             });
             SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
             SIFIR_LIST.addEventListener('click', handleQuizClick); 
-            
-            // Daftarkan Pendengar Acara untuk Butang TTS Baru
             TTS_INFO_TOGGLE.addEventListener('click', toggleTTSInfo);
-            
-            // Listener untuk Butang Bahasa Baru
             LANG_MS_BUTTON.addEventListener('click', () => toggleLanguage('ms'));
             LANG_EN_BUTTON.addEventListener('click', () => toggleLanguage('en'));
             
-            console.log("App Initialized (Local TTS, Quiz 12 Mode, & Multi-Language)");
+            console.log("App Initialized.");
         }
         
         // --- 7. Inisialisasi Halaman (Page Initialization) ---
@@ -812,6 +851,13 @@
                 PASSWORD_INPUT.focus();
             } else {
                  console.error("Ralat: Elemen 'password-input' tidak ditemui.");
+            }
+            
+            // PENYELESAIAN LOG KELUAR: Daftarkan event listener Log Keluar di sini
+            if (LOGOUT_BUTTON) {
+                LOGOUT_BUTTON.addEventListener('click', logout);
+            } else {
+                console.error("Ralat: Elemen 'logout-button' tidak ditemui.");
             }
         };
 

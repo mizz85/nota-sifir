@@ -1,866 +1,681 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota Sifir Bercakap</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .card {
-            background-color: #ffffff;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2); 
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.25);
-        }
-        .equation {
-            padding: 0.5rem 0;
-            transition: background-color 0.2s;
-        }
-        .text-prime {
-            color: #3b82f6; 
-        }
-        .bg-prime {
-            background-color: #3b82f6;
-        }
-        .text-maroon {
-            color: #EF4444; 
-        }
-        #multiplier-select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-indent: 1px;
-            text-overflow: '';
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e</svg>");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.5em;
-        }
-        .answer-box {
-            font-size: 1.875rem; 
-            line-height: 2.25rem;
-            font-weight: 800; 
-        }
-        .bg-login-card {
-            background-color: #ffe6f0; 
-        }
-        .text-login-title {
-            color: #d11270; 
-        }
-        .bg-login-button {
-            background-color: #eb3c8b; 
-        }
-        .answered {
-            cursor: default !important;
-            opacity: 0.6;
-        }
-    </style>
-</head>
-<body class="flex items-center justify-center min-h-screen p-4 bg-amber-50">
+<script type="module">
+    // --- 1. Konfigurasi dan Pembolehubah Global ---
+    const SECRET_PASSWORD = "notasifir5973"; 
     
-    <div id="login-screen" class="w-full max-w-lg flex flex-col items-center justify-center h-full">
-        <div class="card rounded-2xl p-8 w-full bg-login-card border-4 border-pink-400">
-            <div class="flex justify-center mb-2">
-                <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
-                     alt="Logo Syarikat Anda" 
-                     class="w-32 h-32" 
-                     onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
-                />
-            </div>
-            <h1 class="text-4xl font-extrabold text-center mb-6 text-login-title">Nota Sifir Bercakap</h1>
-            <p class="text-center text-gray-700 mb-6">Akses terhad. Sila masukkan Kata Laluan untuk meneruskan.</p>
-            
-            <div class="mb-4">
-                <label for="password-input" class="block text-sm font-medium text-gray-600 mb-2">Kata Laluan:</label>
-                <input type="text" id="password-input" placeholder="Masukkan Kata Laluan" class="w-full text-xl p-3 border-4 border-pink-400 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-200 transition duration-150">
-            </div>
-            
-            <p id="login-message" class="text-center text-red-500 mb-4 font-medium hidden">Kata laluan salah. Sila cuba lagi.</p>
-            
-            <button id="login-button" class="w-full bg-login-button hover:bg-pink-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.01]">
-                Log Masuk
-            </button>
+    // Pembolehubah Bahasa Baru
+    let currentLanguage = 'ms'; 
+    
+    // Pembolehubah DOM untuk Log Masuk (Diperlukan oleh window.onload)
+    const LOGIN_SCREEN = document.getElementById('login-screen');
+    const APP_CONTAINER = document.getElementById('app-container');
+    const PASSWORD_INPUT = document.getElementById('password-input');
+    const LOGIN_BUTTON = document.getElementById('login-button'); 
+    const LOGIN_MESSAGE = document.getElementById('login-message');
+    
+    // Pembolehubah DOM Aplikasi Sifir (Diperlukan oleh initApp)
+    const LANG_MS_BUTTON = document.getElementById('lang-ms-button');
+    const LANG_EN_BUTTON = document.getElementById('lang-en-button');
+    const SPEAK_BUTTON = document.getElementById('speak-button');
+    const SPEAK_TEXT = document.getElementById('speak-text');
+    const LOADING_SPINNER = document.getElementById('loading-spinner');
+    const AUDIO_MESSAGE = document.getElementById('audio-message');
+    const SIFIR_LIST = document.getElementById('sifir-list');
+    const PREV_BUTTON = document.getElementById('prev-button');
+    const NEXT_BUTTON = document.getElementById('next-button');
+    const MULTIPLIER_SELECT = document.getElementById('multiplier-select'); 
+    const MODE_TOGGLE_BUTTON = document.getElementById('mode-toggle'); 
+    const SCORE_DISPLAY = document.getElementById('score-display'); 
+    const CURRENT_SCORE = document.getElementById('current-score'); 
+    const TOTAL_ATTEMPTS = document.getElementById('total-attempts'); 
+    const REMAINING_QUESTIONS = document.getElementById('remaining-questions'); 
+    const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
+    const SOUND_ICON_ON = document.getElementById('sound-icon-on');
+    const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
+    const SOUND_TEXT = document.getElementById('sound-text');
+    const TTS_INFO_TOGGLE = document.getElementById('tts-info-toggle');
+    const TTS_INFO_CONTENT = document.getElementById('tts-info-content');
+    const TTS_INFO_ICON = document.getElementById('tts-info-icon');
+    
+    // Pembolehubah Butang Log Keluar
+    const LOGOUT_BUTTON = document.getElementById('logout-button'); 
+    
+    // Pembolehubah Kawalan
+    let isSoundEnabled = true; 
+    let isSpeaking = false;
+    let isQuizMode = false; 
+    let currentMultiplier = 1;
+    const MIN_MULTIPLIER = 1;
+    const MAX_MULTIPLIER = 12;
 
-            <div class="text-center mt-6">
-                <a href="https://wa.me/60198950339?text=Assalamualaikum%2FHai.%0ANak%20minta%20kata%20laluan%2Fpassword%20Nota%20Sifir%20Bercakap%20boleh%3F%0ANama%20saya%20(Nama%20Pelajar%2FIbu%20Bapa)." 
-                   target="_blank" 
-                   class="text-sm font-semibold text-green-600 hover:text-green-700 underline transition duration-150">
-                    Lupa kata laluan atau nak kata laluan? (Whatsapp Mizz)
-                </a>
-            </div>
-        </div>
-    </div>
+    let audioContext; 
+    let score = 0;
+    const MAX_QUESTIONS = 12; 
+    let quizQuestionsLeft = []; 
+    let quizTarget = null; 
+    
+    // --- 2. Fungsi Bantuan Bahasa & Logik ---
 
-
-    <div id="app-container" class="w-full max-w-lg hidden">
+    function numberToEnglishWords(num) {
+        if (num === 0) return 'zero';
+        if (num > 1000) return num.toString(); 
         
-        <div class="flex justify-center mb-4">
-            <img src="https://raw.githubusercontent.com/mizz85/nota-sifir/main/logo-mizzz.png" 
-                 alt="Logo Syarikat Anda" 
-                 class="w-32 h-32" 
-                 onerror="this.onerror=null; this.src='https://placehold.co/96x96/3b82f6/ffffff?text=M';" 
-            />
-        </div>
-
-        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-6 text-prime">Nota Sifir Bercakap</h1>
-
-        <div class="p-0 mb-6 rounded-lg">
-            <button id="tts-info-toggle" class="w-full flex justify-between items-center bg-red-100 hover:bg-red-200 p-3 rounded-lg shadow-md border-l-4 border-red-500 transition duration-150">
-                <span class="text-sm font-semibold text-red-600">
-                    <b>PENTING:</b> Suara kuiz berbeza; ikut tetapan sebutan peranti anda.
-                </span>
-                <svg id="tts-info-icon" class="w-5 h-5 text-red-600 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div id="tts-info-content" class="hidden mt-2 p-3 bg-white border border-red-300 rounded-lg shadow-inner">
-                <p class="text-sm font-medium text-gray-700 mb-2">Jika suara kuiz berbunyi pelik, sila tukar tetapan sebutan (TTS) anda:</p>
-                <ol class="list-decimal list-inside text-sm text-gray-600 space-y-2 pl-4">
-                    <li>Buka <b>Tetapan</b> (Settings) telefon/peranti anda.</li>
-                    <li>Guna fungsi <b>Carian</b> (Search) dan taip: <span class="font-mono bg-yellow-100 p-0.5 rounded">Text-to-Speech</span>.</li>
-                    <li>Pilih hasil carian <b>"Output Teks-ke-Pertuturan"</b> tersebut.</li>
-                    <li>Pastikan tetapan <b>"Bahasa"</b> diubah kepada <b>"Bahasa Melayu"</b>.</li>
-                </ol>
-                <p class="text-xs text-gray-500 mt-3 italic">Untuk sebutan Inggeris, tetapkan kepada English (UK) atau English (US).</p>
-            </div>
-        </div>
-        <div id="sifir-card" class="card rounded-2xl p-6 md:p-8 border-4 border-pink-400">
-            
-            <div class="flex justify-center mb-4 space-x-3">
-                <button id="lang-ms-button" class="lang-button bg-prime hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-150">
-                    🇲🇾 Bahasa Melayu
-                </button>
-                <button id="lang-en-button" class="lang-button bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full shadow-md transition duration-150">
-                    🇬🇧 English
-                </button>
-            </div>
-            <div id="score-display" class="text-center font-bold mb-4 p-2 rounded-lg bg-green-100 border border-green-300 hidden">
-                Skor: <span id="current-score" class="text-green-800">0</span> / <span id="total-attempts" class="text-gray-600">12</span>
-                <p id="remaining-questions" class="text-sm font-normal text-gray-700 mt-1">Soalan Belum Ditanya: 12</p>
-            </div>
-
-            <div class="flex justify-center mb-4">
-                <button id="mode-toggle" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full shadow-md transition duration-150 transform hover:scale-105">
-                    Tukar ke Mod Kuiz
-                </button>
-            </div>
-            
-            <div class="flex flex-col items-center mb-6">
-                <button id="speak-button" class="bg-prime hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center">
-                    <svg id="speak-icon" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
-                    <span id="speak-text">Baca Sifir Ini</span>
-                    <div id="loading-spinner" class="hidden spinner-border animate-spin ml-3 h-5 w-5 border-4 rounded-full border-t-2 border-white" role="status"></div>
-                </button>
-                <p id="audio-message" class="text-sm mt-2 text-red-500"></p>
-
-                <button id="sound-toggle-button" class="mt-4 flex items-center bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-4 rounded-full transition duration-150">
-                    <span id="sound-icon-on" class="mr-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l3.414-3.414a1 1 0 01.707-.293h0.001c.22 0 .42.1.55.27.13.17.2.39.2.61v11.728c0 .22-.07.44-.2.61-.13.17-.33.27-.55.27h-0.001a1 1 0 01-.707-.293L5.586 15z"></path></svg>
-                    </span>
-                    <span id="sound-icon-off" class="mr-2 hidden">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17a4 4 0 00-4-4H8a4 4 0 00-4 4v2a1 1 0 001 1h8a1 1 0 001-1v-2zm-4-4V7a4 4 0 014-4h2a4 4 0 014 4v6m-4 0v4m0 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </span>
-                    <span id="sound-text">Bunyi</span> 
-                </button>
-            </div>
-
-
-            <div class="text-center mb-6">
-                <label for="multiplier-select" class="block text-lg font-medium text-gray-600 mb-2">Pilih Sifir Darab:</label>
-                <select id="multiplier-select" class="w-full max-w-xs mx-auto block text-center text-4xl font-extrabold text-white bg-prime border-4 border-prime rounded-xl p-2 shadow-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150">
-                </select>
-            </div>
-
-            <div id="sifir-list" class="rounded-lg overflow-hidden border border-gray-200">
-            </div>
-            
-        </div>
-
-        <div class="flex justify-between mt-6">
-            <button id="prev-button" class="flex items-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-full transition duration-150 disabled:opacity-50">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                Sebelum
-            </button>
-            <button id="next-button" class="flex items-center bg-prime hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-150">
-                Seterusnya
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
-        </div>
+        const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+        const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
         
-        <button id="logout-button" class="w-full mt-8 bg-red-500 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.01]">
-            Log Keluar / Logout
-        </button>
-    </div>
-
-    <script type="module">
-        // --- 1. Konfigurasi dan Pembolehubah Global ---
-        const SECRET_PASSWORD = "notasifir5973"; 
+        if (num < 20) return units[num];
+        if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + units[num % 10] : '');
         
-        // Pembolehubah Bahasa Baru
-        let currentLanguage = 'ms'; 
-        
-        // Pembolehubah DOM untuk Log Masuk (Diperlukan oleh window.onload)
-        const LOGIN_SCREEN = document.getElementById('login-screen');
-        const APP_CONTAINER = document.getElementById('app-container');
-        const PASSWORD_INPUT = document.getElementById('password-input');
-        const LOGIN_BUTTON = document.getElementById('login-button'); 
-        const LOGIN_MESSAGE = document.getElementById('login-message');
-        
-        // Pembolehubah DOM Aplikasi Sifir (Diperlukan oleh initApp)
-        const LANG_MS_BUTTON = document.getElementById('lang-ms-button');
-        const LANG_EN_BUTTON = document.getElementById('lang-en-button');
-        const SPEAK_BUTTON = document.getElementById('speak-button');
-        const SPEAK_TEXT = document.getElementById('speak-text');
-        const LOADING_SPINNER = document.getElementById('loading-spinner');
-        const AUDIO_MESSAGE = document.getElementById('audio-message');
-        const SIFIR_LIST = document.getElementById('sifir-list');
-        const PREV_BUTTON = document.getElementById('prev-button');
-        const NEXT_BUTTON = document.getElementById('next-button');
-        const MULTIPLIER_SELECT = document.getElementById('multiplier-select'); 
-        const MODE_TOGGLE_BUTTON = document.getElementById('mode-toggle'); 
-        const SCORE_DISPLAY = document.getElementById('score-display'); 
-        const CURRENT_SCORE = document.getElementById('current-score'); 
-        const TOTAL_ATTEMPTS = document.getElementById('total-attempts'); 
-        const REMAINING_QUESTIONS = document.getElementById('remaining-questions'); 
-        const SOUND_TOGGLE_BUTTON = document.getElementById('sound-toggle-button');
-        const SOUND_ICON_ON = document.getElementById('sound-icon-on');
-        const SOUND_ICON_OFF = document.getElementById('sound-icon-off');
-        const SOUND_TEXT = document.getElementById('sound-text');
-        const TTS_INFO_TOGGLE = document.getElementById('tts-info-toggle');
-        const TTS_INFO_CONTENT = document.getElementById('tts-info-content');
-        const TTS_INFO_ICON = document.getElementById('tts-info-icon');
-        
-        // Pembolehubah Butang Log Keluar
-        const LOGOUT_BUTTON = document.getElementById('logout-button'); 
-        
-        // Pembolehubah Kawalan
-        let isSoundEnabled = true; 
-        let isSpeaking = false;
-        let isQuizMode = false; 
-        let currentMultiplier = 1;
-        const MIN_MULTIPLIER = 1;
-        const MAX_MULTIPLIER = 12;
-
-        let audioContext; 
-        let score = 0;
-        const MAX_QUESTIONS = 12; 
-        let quizQuestionsLeft = []; 
-        let quizTarget = null; 
-        
-        // --- 2. Fungsi Bantuan Bahasa & Logik ---
-
-        function numberToEnglishWords(num) {
-            if (num === 0) return 'zero';
-            if (num > 1000) return num.toString(); 
-            
-            const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
-            const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-            
-            if (num < 20) return units[num];
-            if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + units[num % 10] : '');
-            
-            const h = Math.floor(num / 100);
-            const rem = num % 100;
-            let str = units[h] + ' hundred';
-            if (rem > 0) {
-                str += ' and ' + numberToEnglishWords(rem); 
-            }
-            return str.trim(); 
+        const h = Math.floor(num / 100);
+        const rem = num % 100;
+        let str = units[h] + ' hundred';
+        if (rem > 0) {
+            str += ' and ' + numberToEnglishWords(rem); 
         }
+        return str.trim(); 
+    }
 
-        function getSpelledEnglish(num1, num2) {
-            const result = num1 * num2;
-            const num1Spelled = numberToEnglishWords(num1);
-            const num2Spelled = numberToEnglishWords(num2);
-            const resultSpelled = numberToEnglishWords(result);
-            return { num1Spelled, num2Spelled, resultSpelled };
-        }
+    function getSpelledEnglish(num1, num2) {
+        const result = num1 * num2;
+        const num1Spelled = numberToEnglishWords(num1);
+        const num2Spelled = numberToEnglishWords(num2);
+        const resultSpelled = numberToEnglishWords(result);
+        return { num1Spelled, num2Spelled, resultSpelled };
+    }
 
-        // --- 3. Logik Log Masuk & Log Keluar ---
+    // --- 3. Logik Log Masuk & Log Keluar ---
+    
+    function attemptLogin() {
+        if (LOGIN_BUTTON.disabled) return;
+        LOGIN_BUTTON.disabled = true;
+
+        const enteredPassword = PASSWORD_INPUT.value.trim().toLowerCase();
         
-        function attemptLogin() {
-            if (LOGIN_BUTTON.disabled) return;
-            LOGIN_BUTTON.disabled = true;
-
-            const enteredPassword = PASSWORD_INPUT.value.trim().toLowerCase();
-            
-            if (enteredPassword === SECRET_PASSWORD) {
-                LOGIN_SCREEN.classList.add('hidden');
-                APP_CONTAINER.classList.remove('hidden');
-                LOGIN_MESSAGE.classList.add('hidden');
-                initApp();
-            } else {
-                LOGIN_MESSAGE.textContent = 'Kata laluan salah. Sila cuba lagi.';
-                LOGIN_MESSAGE.classList.remove('hidden');
-                PASSWORD_INPUT.value = ''; 
-                PASSWORD_INPUT.focus();
-            }
-            
-            setTimeout(() => { LOGIN_BUTTON.disabled = false; }, 500);
-        }
-        
-        // FUNGSI LOGOUT YANG DIGUNAKAN OLEH EVENT LISTENER
-        function logout() {
-            stopSpeaking(); 
-            
-            APP_CONTAINER.classList.add('hidden');
-            LOGIN_SCREEN.classList.remove('hidden');
-            
-            PASSWORD_INPUT.value = '';
+        if (enteredPassword === SECRET_PASSWORD) {
+            LOGIN_SCREEN.classList.add('hidden');
+            APP_CONTAINER.classList.remove('hidden');
             LOGIN_MESSAGE.classList.add('hidden');
+            initApp();
+        } else {
+            LOGIN_MESSAGE.textContent = 'Kata laluan salah. Sila cuba lagi.';
+            LOGIN_MESSAGE.classList.remove('hidden');
+            PASSWORD_INPUT.value = ''; 
             PASSWORD_INPUT.focus();
+        }
+        
+        setTimeout(() => { LOGIN_BUTTON.disabled = false; }, 500);
+    }
+    
+    function logout() {
+        stopSpeaking(); 
+        
+        APP_CONTAINER.classList.add('hidden');
+        LOGIN_SCREEN.classList.remove('hidden');
+        
+        PASSWORD_INPUT.value = '';
+        LOGIN_MESSAGE.classList.add('hidden');
+        PASSWORD_INPUT.focus();
+        
+        if (isQuizMode) {
+            toggleQuizMode(); 
+        }
+    }
+    
+    // --- 4. Fungsi Audio & TTS (TTS & Bunyi) ---
+    
+    function stopSpeaking() {
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+        isSpeaking = false;
+        
+        SPEAK_TEXT.textContent = isQuizMode ? 
+            (currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question') : 
+            (currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table');
             
-            // Kembali ke mod Nota
-            if (isQuizMode) {
-                toggleQuizMode(); 
+        SPEAK_BUTTON.disabled = false;
+        AUDIO_MESSAGE.textContent = '';
+        LOADING_SPINNER.classList.add('hidden'); 
+    }
+    
+    function playCorrectSound() {
+        if (!isSoundEnabled) return;
+        generateTone(700, 0.08, 0.1, 0.5); 
+    }
+
+    function playWrongSound() {
+        if (!isSoundEnabled) return;
+        generateTone(200, 0.15, 0.3, 0.05); 
+    }
+
+    function generateTone(frequency, startVolume, endVolume, duration) {
+        try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(startVolume, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(endVolume, audioContext.currentTime + duration);
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+            // Ignore audio context errors on some mobile browsers
+        }
+    }
+
+    function playClickSound() {
+        if (!isSoundEnabled) return;
+        generateTone(440, 0.1, 0.001, 0.05);
+    }
+
+    let voices = [];
+    let voiceLoadInterval = null;
+
+    function loadVoices() {
+        voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+            clearInterval(voiceLoadInterval);
+        }
+    }
+
+    loadVoices();
+    if (window.speechSynthesis) {
+        voiceLoadInterval = setInterval(loadVoices, 500);
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speakText(text, lang) {
+        if (!isSoundEnabled || !window.speechSynthesis) {
+            AUDIO_MESSAGE.textContent = lang === 'ms' ? 'Suara tidak disokong atau dimatikan.' : 'Voice not supported or turned off.';
+            return;
+        }
+
+        stopSpeaking(); 
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        let preferredVoice = null;
+        
+        if (lang === 'ms') {
+            utterance.rate = 1.0; 
+            utterance.pitch = 1.1; 
+            
+            // --- LOGIK PRIORITI SUARA MELAYU (Msia vs Indonesia) ---
+            
+            // Keutamaan 1: Suara Wanita Bahasa Melayu Malaysia (ms-MY)
+            const malayFemaleMY = voices.find(voice => 
+                voice.lang.includes('ms-MY') && 
+                (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('perempuan') || voice.name.toLowerCase().includes('suri'))
+            );
+            
+            // Keutamaan 2: Mana-mana Suara Bahasa Melayu Malaysia (ms-MY)
+            const malayVoiceMY = voices.find(voice => voice.lang.includes('ms-MY'));
+
+            // Keutamaan 3: Suara Wanita Bahasa Indonesia (id-ID) - sebagai fallback
+             const malayFemaleID = voices.find(voice => 
+                voice.lang.includes('id-ID') && 
+                (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('perempuan') || voice.name.toLowerCase().includes('suri'))
+            );
+
+            preferredVoice = malayFemaleMY || malayVoiceMY || malayFemaleID;
+            
+            // Tetapkan suara atau fallback
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+                utterance.lang = preferredVoice.lang;
+            } else {
+                utterance.lang = 'ms-MY'; // Fallback paling asas untuk sebutan
+            }
+            // --- END LOGIK PRIORITI SUARA MELAYU ---
+            
+        } else if (lang === 'en') {
+            utterance.rate = 1.0; 
+            utterance.pitch = 1.0;
+            
+            const englishVoice = voices.find(voice => 
+                voice.lang.includes('en') && 
+                (voice.name.toLowerCase().includes('us') || voice.name.toLowerCase().includes('united states') || voice.name.toLowerCase().includes('uk'))
+            );
+
+            preferredVoice = englishVoice || voices.find(voice => voice.lang.includes('en'));
+            
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+                utterance.lang = preferredVoice.lang;
+            } else {
+                utterance.lang = 'en-US'; // Fallback
             }
         }
         
-        // --- 4. Fungsi Audio & TTS (TTS & Bunyi) ---
+        isSpeaking = true;
+        SPEAK_BUTTON.disabled = true;
         
-        function stopSpeaking() {
-            if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-            }
+        const quizCompleteMessage = lang === 'ms' ? 
+            `Tahniah! Sifir ${currentMultiplier} telah selesai. Skor akhir: ${score}/${MAX_QUESTIONS}` : 
+            `Congratulations! The ${currentMultiplier} times table is complete. Final score: ${score}/${MAX_QUESTIONS}`;
+
+        utterance.onend = () => {
             isSpeaking = false;
-            
-            SPEAK_TEXT.textContent = isQuizMode ? 
-                (currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question') : 
-                (currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table');
-                
             SPEAK_BUTTON.disabled = false;
-            AUDIO_MESSAGE.textContent = '';
-            LOADING_SPINNER.classList.add('hidden'); 
-        }
-        
-        function playCorrectSound() {
-            if (!isSoundEnabled) return;
-            generateTone(700, 0.08, 0.1, 0.5); 
-        }
-
-        function playWrongSound() {
-            if (!isSoundEnabled) return;
-            generateTone(200, 0.15, 0.3, 0.05); 
-        }
-
-        function generateTone(frequency, startVolume, endVolume, duration) {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                
-                gainNode.gain.setValueAtTime(startVolume, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(endVolume, audioContext.currentTime + duration);
-
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                // Ignore audio context errors on some mobile browsers
-            }
-        }
-
-        function playClickSound() {
-            if (!isSoundEnabled) return;
-            generateTone(440, 0.1, 0.001, 0.05);
-        }
-
-        let voices = [];
-        let voiceLoadInterval = null;
-
-        function loadVoices() {
-            voices = window.speechSynthesis.getVoices();
-            if (voices.length > 0) {
-                clearInterval(voiceLoadInterval);
-            }
-        }
-
-        loadVoices();
-        if (window.speechSynthesis) {
-            voiceLoadInterval = setInterval(loadVoices, 500);
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-        }
-
-        function speakText(text, lang) {
-            if (!isSoundEnabled || !window.speechSynthesis) {
-                AUDIO_MESSAGE.textContent = lang === 'ms' ? 'Suara tidak disokong atau dimatikan.' : 'Voice not supported or turned off.';
-                return;
-            }
-
-            stopSpeaking(); 
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            
-            let preferredVoice = null;
-            
-            if (lang === 'ms') {
-                utterance.rate = 1.0; 
-                utterance.pitch = 1.1; 
-                
-                const malayFemaleVoice = voices.find(voice => 
-                    (voice.lang.includes('ms') || voice.lang.includes('id')) && 
-                    (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('perempuan') || voice.name.toLowerCase().includes('suri'))
-                );
-                const malayVoice = voices.find(voice => voice.lang.includes('ms') || voice.lang.includes('id'));
-                
-                preferredVoice = malayFemaleVoice || malayVoice;
-                
-                if (preferredVoice) {
-                    utterance.voice = preferredVoice;
-                } else {
-                    utterance.lang = 'ms-MY'; // Fallback
-                }
-                
-            } else if (lang === 'en') {
-                utterance.rate = 1.0; 
-                utterance.pitch = 1.0;
-                
-                const englishVoice = voices.find(voice => 
-                    voice.lang.includes('en') && 
-                    (voice.name.toLowerCase().includes('us') || voice.name.toLowerCase().includes('united states') || voice.name.toLowerCase().includes('uk'))
-                );
-
-                preferredVoice = englishVoice || voices.find(voice => voice.lang.includes('en'));
-                
-                if (preferredVoice) {
-                    utterance.voice = preferredVoice;
-                } else {
-                    utterance.lang = 'en-US'; // Fallback
-                }
-            }
-            
-            isSpeaking = true;
-            SPEAK_BUTTON.disabled = true;
-            
-            const quizCompleteMessage = lang === 'ms' ? 
-                `Tahniah! Sifir ${currentMultiplier} telah selesai. Skor akhir: ${score}/${MAX_QUESTIONS}` : 
-                `Congratulations! The ${currentMultiplier} times table is complete. Final score: ${score}/${MAX_QUESTIONS}`;
-
-            utterance.onend = () => {
-                isSpeaking = false;
-                SPEAK_BUTTON.disabled = false;
-                if (!isQuizMode || quizQuestionsLeft.length === 0) {
-                    SPEAK_TEXT.textContent = isQuizMode ? 
-                        (lang === 'ms' ? 'Sifir Selesai!' : 'Table Done!') : 
-                        (lang === 'ms' ? 'Baca Sifir Ini' : 'Read Table');
-                        
-                    if (isQuizMode && quizQuestionsLeft.length === 0) {
-                         AUDIO_MESSAGE.textContent = quizCompleteMessage;
-                    }
-                }
-            };
-
-            utterance.onerror = (e) => {
-                console.error("Ralat TTS pelayar:", e);
-                AUDIO_MESSAGE.textContent = lang === 'ms' ? `Ralat suara: ${e.error}` : `Voice error: ${e.error}`;
-                stopSpeaking();
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-        
-        function speakTable() {
-            if (!isSoundEnabled) {
-                AUDIO_MESSAGE.textContent = currentLanguage === 'ms' ? 'Bunyi dimatikan.' : 'Sound is muted.';
-                return;
-            }
-
-            if (isSpeaking) {
-                stopSpeaking();
-                return;
-            }
-            
-            const noQuestionsMessage = currentLanguage === 'ms' ? 
-                `Semua ${MAX_QUESTIONS} soalan sifir ${currentMultiplier} telah ditanya. Tukar sifir atau mod.` : 
-                `All ${MAX_QUESTIONS} questions for the ${currentMultiplier} times table have been asked. Change multiplier or mode.`;
-            
-            if (isQuizMode && quizQuestionsLeft.length === 0) {
-                AUDIO_MESSAGE.textContent = noQuestionsMessage;
-                SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Sifir Selesai!' : 'Table Done!';
-                return;
-            }
-
-            SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Bercakap... (Klik untuk berhenti)' : 'Speaking... (Click to stop)';
-            
-            let textToSpeak;
-            if (isQuizMode) {
-                const randomIndex = Math.floor(Math.random() * quizQuestionsLeft.length);
-                const factor2 = quizQuestionsLeft[randomIndex]; 
-                const result = currentMultiplier * factor2;
-                
-                quizTarget = { factor1: currentMultiplier, factor2: factor2, result: result, questionIndex: randomIndex }; 
-                
-                if (currentLanguage === 'ms') {
-                    textToSpeak = `${currentMultiplier} darab ${factor2} sama dengan berapa? Jawab sekarang.`;
-                } else { 
-                    const { num1Spelled, num2Spelled } = getSpelledEnglish(currentMultiplier, factor2);
-                    textToSpeak = `${num1Spelled} times ${num2Spelled} equals what? Answer now.`;
-                }
-                
-                SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 
-                    `Sila Jawab: ${currentMultiplier} x ${factor2} = ?` : 
-                    `Answer Now: ${currentMultiplier} x ${factor2} = ?`;
-
-            } else {
-                if (currentLanguage === 'ms') {
-                    textToSpeak = `Ini ialah sifir darab ${currentMultiplier}. `;
-                    for (let i = 1; i <= 12; i++) {
-                        textToSpeak += `${currentMultiplier} darab ${i} sama dengan ${currentMultiplier * i}. `;
-                    }
-                    textToSpeak += `Itu sahaja sifir ${currentMultiplier}.`; 
-                } else { 
-                    const currentMultiplierSpelled = numberToEnglishWords(currentMultiplier);
-                    textToSpeak = `This is the ${currentMultiplierSpelled} times table. `;
-                    for (let i = 1; i <= 12; i++) {
-                        const { num2Spelled, resultSpelled } = getSpelledEnglish(currentMultiplier, i);
-                        textToSpeak += `${currentMultiplierSpelled} times ${num2Spelled} equals ${resultSpelled}. `;
-                    }
-                    textToSpeak += `That is the ${currentMultiplierSpelled} times table.`; 
-                }
-            }
-            
-            speakText(textToSpeak, currentLanguage);
-        }
-
-        // --- 5. Logik Aplikasi Utama (UI/Mode Logic) ---
-        
-        function updateScoreDisplay() {
-            CURRENT_SCORE.textContent = score;
-            TOTAL_ATTEMPTS.textContent = MAX_QUESTIONS; 
-            REMAINING_QUESTIONS.textContent = currentLanguage === 'ms' ? 
-                `Soalan Belum Ditanya: ${quizQuestionsLeft.length}` : 
-                `Questions Remaining: ${quizQuestionsLeft.length}`;
-        }
-        
-        function resetQuizForMultiplier() {
-            quizQuestionsLeft = Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1);
-            score = 0;
-            quizTarget = null;
-            updateScoreDisplay();
-        }
-
-        function populateMultiplierSelect() {
-            MULTIPLIER_SELECT.innerHTML = '';
-            for (let i = MIN_MULTIPLIER; i <= MAX_MULTIPLIER; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = currentLanguage === 'ms' ? `Sifir ${i}` : `Table of ${i}`;
-                MULTIPLIER_SELECT.appendChild(option);
-            }
-        }
-
-        function updateUIText() {
-            // KEMAS KINI TEKS LOG KELUAR
-            LOGOUT_BUTTON.textContent = currentLanguage === 'ms' ? 'Log Keluar / Logout' : 'Logout';
-            
-            document.querySelector('h1').textContent = currentLanguage === 'ms' ? 'Nota Sifir Bercakap' : 'Speaking Times Table';
-            
-            if (isQuizMode) {
-                MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Nota' : 'Switch to Note Mode';
-                SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question'; 
-            } else {
-                MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Kuiz' : 'Switch to Quiz Mode';
-                SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table'; 
-            }
-            
-            PREV_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Sebelum' : 'Previous';
-            NEXT_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Seterusnya' : 'Next';
-            document.querySelector('label[for="multiplier-select"]').textContent = currentLanguage === 'ms' ? 'Pilih Sifir Darab:' : 'Select Times Table:';
-
-            if (isQuizMode) {
-                document.querySelector('#score-display').firstChild.textContent = currentLanguage === 'ms' ? 'Skor: ' : 'Score: ';
-            }
-            
-            populateMultiplierSelect();
-            updateSifirDisplay();
-            updateScoreDisplay(); 
-        }
-        
-        function toggleLanguage(lang) {
-            if (currentLanguage === lang) return;
-            currentLanguage = lang;
-            stopSpeaking(); 
-            
-            if (lang === 'ms') {
-                LANG_MS_BUTTON.classList.add('bg-prime', 'hover:bg-blue-600', 'text-white');
-                LANG_MS_BUTTON.classList.remove('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
-                LANG_EN_BUTTON.classList.remove('bg-prime', 'hover:bg-blue-600', 'text-white');
-                LANG_EN_BUTTON.classList.add('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
-            } else {
-                LANG_EN_BUTTON.classList.add('bg-prime', 'hover:bg-blue-600', 'text-white');
-                LANG_EN_BUTTON.classList.remove('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
-                LANG_MS_BUTTON.classList.remove('bg-prime', 'hover:bg-blue-600', 'text-white');
-                LANG_MS_BUTTON.classList.add('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
-            }
-
-            updateUIText();
-        }
-        
-
-        function toggleQuizMode() {
-            isQuizMode = !isQuizMode;
-            
-            if (isQuizMode) {
-                MODE_TOGGLE_BUTTON.classList.remove('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
-                MODE_TOGGLE_BUTTON.classList.add('bg-pink-500', 'hover:bg-pink-600', 'text-white');
-                SCORE_DISPLAY.classList.remove('hidden'); 
-                resetQuizForMultiplier(); 
-            } else {
-                MODE_TOGGLE_BUTTON.classList.add('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
-                MODE_TOGGLE_BUTTON.classList.remove('bg-pink-500', 'hover:bg-pink-600', 'text-white');
-                SCORE_DISPLAY.classList.add('hidden'); 
-            }
-            
-            stopSpeaking(); 
-            updateUIText(); 
-        }
-
-        function updateSoundToggleUI() {
-            if (isSoundEnabled) {
-                SOUND_ICON_ON.classList.remove('hidden');
-                SOUND_ICON_OFF.classList.add('hidden');
-                SOUND_TEXT.textContent = currentLanguage === 'ms' ? 'Bunyi' : 'Sound On'; 
-                SOUND_TOGGLE_BUTTON.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
-                SOUND_TOGGLE_BUTTON.classList.add('bg-green-100', 'hover:bg-green-200', 'text-green-700');
-            } else {
-                SOUND_ICON_ON.classList.add('hidden');
-                SOUND_ICON_OFF.classList.remove('hidden');
-                SOUND_TEXT.textContent = currentLanguage === 'ms' ? 'Senyap' : 'Mute'; 
-                SOUND_TOGGLE_BUTTON.classList.remove('bg-green-100', 'hover:bg-green-200', 'text-green-700');
-                SOUND_TOGGLE_BUTTON.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
-            }
-        }
-
-        function updateSifirDisplay() {
-            MULTIPLIER_SELECT.value = currentMultiplier; 
-
-            SIFIR_LIST.innerHTML = '';
-            
-            const answeredFactors = isQuizMode ? 
-                Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1)
-                .filter(factor => !quizQuestionsLeft.includes(factor)) : [];
-
-            for (let i = 1; i <= 12; i++) {
-                const result = currentMultiplier * i;
-                const equationDiv = document.createElement('div');
-                const rowClass = i % 2 !== 0 ? 'bg-pink-50' : 'bg-green-50'; 
-                
-                equationDiv.className = `equation flex justify-between items-center p-3 md:px-5 font-mono ${rowClass} hover:bg-yellow-100 transition duration-100`;
-                
-                equationDiv.addEventListener('mouseover', playClickSound);
-                equationDiv.addEventListener('touchstart', playClickSound);
-                
-                let answerHtml;
-                
-                if (isQuizMode) {
-                    const isAnswered = answeredFactors.includes(i);
-                    const answeredClass = isAnswered ? 'bg-green-500 text-white answered' : 'bg-gray-200 text-gray-200 hover:bg-gray-300 hover:text-gray-300 cursor-pointer';
-
-                    answerHtml = `<span 
-                                    data-result="${result}"
-                                    data-factor2="${i}"
-                                    class="answer-box font-extrabold select-none px-4 rounded-md text-3xl transition duration-200 ${answeredClass}">
-                                    ${isAnswered ? result : '?'}
-                                  </span>`;
-                } else {
-                    answerHtml = `<span class="font-extrabold text-green-800 text-3xl">${result}</span>`;
-                }
-                
-                equationDiv.innerHTML = `
-                    <span class="font-extrabold text-maroon text-3xl">${currentMultiplier}</span>
-                    <span class="text-gray-900 text-3xl">x</span>
-                    <span class="font-extrabold text-maroon text-3xl">${i}</span>
-                    <span class="text-gray-900 text-3xl">=</span>
-                    ${answerHtml}
-                `;
-                SIFIR_LIST.appendChild(equationDiv);
-            }
-
-            PREV_BUTTON.disabled = currentMultiplier === MIN_MULTIPLIER;
-            NEXT_BUTTON.disabled = currentMultiplier === MAX_MULTIPLIER;
-            
-            if (isQuizMode) {
-                 SPEAK_BUTTON.disabled = quizQuestionsLeft.length === 0;
-            } else {
-                 SPEAK_BUTTON.disabled = false;
-            }
-
-            if (isQuizMode) updateScoreDisplay();
-        }
-
-        function goToNextSifir() {
-            if (currentMultiplier < MAX_MULTIPLIER) {
-                currentMultiplier++;
-                resetQuizForMultiplier(); 
-                updateSifirDisplay();
-            }
-        }
-
-        function goToPrevSifir() {
-            if (currentMultiplier > MIN_MULTIPLIER) {
-                currentMultiplier--;
-                resetQuizForMultiplier(); 
-                updateSifirDisplay();
-            }
-        }
-        
-        function toggleSound() {
-            isSoundEnabled = !isSoundEnabled;
-            updateSoundToggleUI();
-            stopSpeaking(); 
-            
-            if (isSoundEnabled && audioContext && audioContext.state === 'suspended') {
-                audioContext.resume().catch(e => console.error("Ralat semasa resume AudioContext:", e));
-            }
-        }
-
-        function handleQuizClick(event) {
-            if (!isQuizMode) return;
-            
-            const clickedElement = event.target.closest('.answer-box');
-            
-            if (clickedElement && !clickedElement.classList.contains('answered')) {
-                const clickedFactor2 = parseInt(clickedElement.getAttribute('data-factor2'), 10);
-                const clickedResult = parseInt(clickedElement.getAttribute('data-result'), 10);
-                
-                let correctMessage;
-                let wrongMessage;
-                let noQuestionMessage;
-                
-                if (currentLanguage === 'ms') {
-                    correctMessage = `BETUL! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
-                    wrongMessage = 'Salah. Anda klik soalan lain. Soalan semasa ialah ' + `${quizTarget.factor1} x ${quizTarget.factor2}`;
-                    noQuestionMessage = 'Sila tekan "Tanya Soalan" dahulu.';
-                } else {
-                    correctMessage = `CORRECT! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
-                    wrongMessage = 'Wrong. You clicked another question. The current question is ' + `${quizTarget.factor1} x ${quizTarget.factor2}`;
-                    noQuestionMessage = 'Please press "Ask Question" first.';
-                }
-                
-                if (quizTarget && clickedFactor2 === quizTarget.factor2) {
-                    score++;
-                    playCorrectSound();
-                    AUDIO_MESSAGE.textContent = correctMessage;
+            if (!isQuizMode || quizQuestionsLeft.length === 0) {
+                SPEAK_TEXT.textContent = isQuizMode ? 
+                    (lang === 'ms' ? 'Sifir Selesai!' : 'Table Done!') : 
+                    (lang === 'ms' ? 'Baca Sifir Ini' : 'Read Table');
                     
-                    quizQuestionsLeft.splice(quizTarget.questionIndex, 1);
-                    
-                    clickedElement.textContent = clickedResult;
-                    clickedElement.classList.remove('bg-gray-200', 'text-gray-200', 'hover:bg-gray-300', 'hover:text-gray-300', 'cursor-pointer');
-                    clickedElement.classList.add('bg-green-500', 'text-white', 'answered');
-                    
-                    quizTarget = null;
-                    
-                    updateScoreDisplay(); 
-                    if (quizQuestionsLeft.length > 0) {
-                        SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question';
-                    } else {
-                         SPEAK_BUTTON.disabled = true;
-                         SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Sifir Selesai!' : 'Table Done!';
-                         AUDIO_MESSAGE.textContent += currentLanguage === 'ms' ? ` (Sifir ${currentMultiplier} SELESAI!)` : ` (Table ${currentMultiplier} DONE!)`;
-                    }
-                    
-                } else if (!quizTarget) {
-                    AUDIO_MESSAGE.textContent = noQuestionMessage;
-                    playWrongSound();
-                    
-                } else {
-                    playWrongSound();
-                    AUDIO_MESSAGE.textContent = wrongMessage;
-                    
-                    clickedElement.classList.remove('bg-gray-200', 'hover:bg-gray-300');
-                    clickedElement.classList.add('bg-red-500', 'hover:bg-red-500');
-
-                    setTimeout(() => {
-                        clickedElement.classList.remove('bg-red-500', 'hover:bg-red-500');
-                        clickedElement.classList.add('bg-gray-200', 'hover:bg-gray-300');
-                    }, 500); 
+                if (isQuizMode && quizQuestionsLeft.length === 0) {
+                     AUDIO_MESSAGE.textContent = quizCompleteMessage;
                 }
-            }
-        }
-
-        function toggleTTSInfo() {
-            const isHidden = TTS_INFO_CONTENT.classList.contains('hidden');
-            if (isHidden) {
-                TTS_INFO_CONTENT.classList.remove('hidden');
-                TTS_INFO_ICON.classList.add('rotate-180'); 
-            } else {
-                TTS_INFO_CONTENT.classList.add('hidden');
-                TTS_INFO_ICON.classList.remove('rotate-180');
-            }
-        }
-
-        // --- 6. Inisialisasi Aplikasi (Initialization) ---
-        
-        async function initApp() {
-            toggleLanguage('ms'); 
-            
-            updateSoundToggleUI();
-            populateMultiplierSelect(); 
-            resetQuizForMultiplier(); 
-            updateSifirDisplay(); 
-            updateUIText(); 
-            
-            // Daftarkan Pendengar Acara Aplikasi
-            NEXT_BUTTON.addEventListener('click', goToNextSifir);
-            PREV_BUTTON.addEventListener('click', goToPrevSifir);
-            SPEAK_BUTTON.addEventListener('click', speakTable); 
-            MODE_TOGGLE_BUTTON.addEventListener('click', toggleQuizMode); 
-            MULTIPLIER_SELECT.addEventListener('change', (event) => {
-                const newMultiplier = parseInt(event.target.value, 10);
-                if (!isNaN(newMultiplier) && newMultiplier >= MIN_MULTIPLIER && newMultiplier <= MAX_MULTIPLIER) {
-                    currentMultiplier = newMultiplier;
-                    resetQuizForMultiplier(); 
-                    updateSifirDisplay();
-                }
-            });
-            SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
-            SIFIR_LIST.addEventListener('click', handleQuizClick); 
-            TTS_INFO_TOGGLE.addEventListener('click', toggleTTSInfo);
-            LANG_MS_BUTTON.addEventListener('click', () => toggleLanguage('ms'));
-            LANG_EN_BUTTON.addEventListener('click', () => toggleLanguage('en'));
-            
-            console.log("App Initialized.");
-        }
-        
-        // --- 7. Inisialisasi Halaman (Page Initialization) ---
-        
-        window.onload = function() {
-            if (LOGIN_BUTTON) {
-                LOGIN_BUTTON.addEventListener('click', attemptLogin);
-            } else {
-                 console.error("Ralat: Elemen 'login-button' tidak ditemui.");
-            }
-            
-            if (PASSWORD_INPUT) {
-                 PASSWORD_INPUT.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        attemptLogin();
-                    }
-                });
-                PASSWORD_INPUT.focus();
-            } else {
-                 console.error("Ralat: Elemen 'password-input' tidak ditemui.");
-            }
-            
-            // PENYELESAIAN LOG KELUAR: Daftarkan event listener Log Keluar di sini
-            if (LOGOUT_BUTTON) {
-                LOGOUT_BUTTON.addEventListener('click', logout);
-            } else {
-                console.error("Ralat: Elemen 'logout-button' tidak ditemui.");
             }
         };
 
-    </script>
-</body>
-</html>
+        utterance.onerror = (e) => {
+            console.error("Ralat TTS pelayar:", e);
+            AUDIO_MESSAGE.textContent = lang === 'ms' ? `Ralat suara: ${e.error}` : `Voice error: ${e.error}`;
+            stopSpeaking();
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    function speakTable() {
+        if (!isSoundEnabled) {
+            AUDIO_MESSAGE.textContent = currentLanguage === 'ms' ? 'Bunyi dimatikan.' : 'Sound is muted.';
+            return;
+        }
+
+        if (isSpeaking) {
+            stopSpeaking();
+            return;
+        }
+        
+        const noQuestionsMessage = currentLanguage === 'ms' ? 
+            `Semua ${MAX_QUESTIONS} soalan sifir ${currentMultiplier} telah ditanya. Tukar sifir atau mod.` : 
+            `All ${MAX_QUESTIONS} questions for the ${currentMultiplier} times table have been asked. Change multiplier or mode.`;
+        
+        if (isQuizMode && quizQuestionsLeft.length === 0) {
+            AUDIO_MESSAGE.textContent = noQuestionsMessage;
+            SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Sifir Selesai!' : 'Table Done!';
+            return;
+        }
+
+        SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Bercakap... (Klik untuk berhenti)' : 'Speaking... (Click to stop)';
+        
+        let textToSpeak;
+        if (isQuizMode) {
+            const randomIndex = Math.floor(Math.random() * quizQuestionsLeft.length);
+            const factor2 = quizQuestionsLeft[randomIndex]; 
+            const result = currentMultiplier * factor2;
+            
+            quizTarget = { factor1: currentMultiplier, factor2: factor2, result: result, questionIndex: randomIndex }; 
+            
+            if (currentLanguage === 'ms') {
+                // PEMBETULAN: Menggunakan nombor terus (1, 2, 3...) dalam teks untuk memaksa TTS BM membaca sebagai "satu, dua, tiga..."
+                textToSpeak = `${currentMultiplier} darab ${factor2} sama dengan berapa? Jawab sekarang.`;
+            } else { 
+                // Kekalkan fungsi BI sedia ada
+                const { num1Spelled, num2Spelled } = getSpelledEnglish(currentMultiplier, factor2);
+                textToSpeak = `${num1Spelled} times ${num2Spelled} equals what? Answer now.`;
+            }
+            
+            SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 
+                `Sila Jawab: ${currentMultiplier} x ${factor2} = ?` : 
+                `Answer Now: ${currentMultiplier} x ${factor2} = ?`;
+
+        } else {
+            if (currentLanguage === 'ms') {
+                // Mod Nota BM (Sudah betul: menggunakan nombor terus)
+                textToSpeak = `Ini ialah sifir darab ${currentMultiplier}. `;
+                for (let i = 1; i <= 12; i++) {
+                    textToSpeak += `${currentMultiplier} darab ${i} sama dengan ${currentMultiplier * i}. `;
+                }
+                textToSpeak += `Itu sahaja sifir ${currentMultiplier}.`; 
+            } else { 
+                // Mod Nota BI (Kekalkan)
+                const currentMultiplierSpelled = numberToEnglishWords(currentMultiplier);
+                textToSpeak = `This is the ${currentMultiplierSpelled} times table. `;
+                for (let i = 1; i <= 12; i++) {
+                    const { num2Spelled, resultSpelled } = getSpelledEnglish(currentMultiplier, i);
+                    textToSpeak += `${currentMultiplierSpelled} times ${num2Spelled} equals ${resultSpelled}. `;
+                }
+                textToSpeak += `That is the ${currentMultiplierSpelled} times table.`; 
+            }
+        }
+        
+        speakText(textToSpeak, currentLanguage);
+    }
+
+    // --- 5. Logik Aplikasi Utama (UI/Mode Logic) ---
+    
+    function updateScoreDisplay() {
+        CURRENT_SCORE.textContent = score;
+        TOTAL_ATTEMPTS.textContent = MAX_QUESTIONS; 
+        REMAINING_QUESTIONS.textContent = currentLanguage === 'ms' ? 
+            `Soalan Belum Ditanya: ${quizQuestionsLeft.length}` : 
+            `Questions Remaining: ${quizQuestionsLeft.length}`;
+    }
+    
+    function resetQuizForMultiplier() {
+        quizQuestionsLeft = Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1);
+        score = 0;
+        quizTarget = null;
+        updateScoreDisplay();
+    }
+
+    function populateMultiplierSelect() {
+        MULTIPLIER_SELECT.innerHTML = '';
+        for (let i = MIN_MULTIPLIER; i <= MAX_MULTIPLIER; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = currentLanguage === 'ms' ? `Sifir ${i}` : `Table of ${i}`;
+            MULTIPLIER_SELECT.appendChild(option);
+        }
+    }
+
+    function updateUIText() {
+        LOGOUT_BUTTON.textContent = currentLanguage === 'ms' ? 'Log Keluar / Logout' : 'Logout';
+        
+        document.querySelector('h1').textContent = currentLanguage === 'ms' ? 'Nota Sifir Bercakap' : 'Speaking Times Table';
+        
+        if (isQuizMode) {
+            MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Nota' : 'Switch to Note Mode';
+            SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question'; 
+        } else {
+            MODE_TOGGLE_BUTTON.textContent = currentLanguage === 'ms' ? 'Tukar ke Mod Kuiz' : 'Switch to Quiz Mode';
+            SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Baca Sifir Ini' : 'Read Table'; 
+        }
+        
+        PREV_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Sebelum' : 'Previous';
+        NEXT_BUTTON.lastChild.textContent = currentLanguage === 'ms' ? 'Seterusnya' : 'Next';
+        document.querySelector('label[for="multiplier-select"]').textContent = currentLanguage === 'ms' ? 'Pilih Sifir Darab:' : 'Select Times Table:';
+
+        if (isQuizMode) {
+            document.querySelector('#score-display').firstChild.textContent = currentLanguage === 'ms' ? 'Skor: ' : 'Score: ';
+        }
+        
+        populateMultiplierSelect();
+        updateSifirDisplay();
+        updateScoreDisplay(); 
+    }
+    
+    function toggleLanguage(lang) {
+        if (currentLanguage === lang) return;
+        currentLanguage = lang;
+        stopSpeaking(); 
+        
+        if (lang === 'ms') {
+            LANG_MS_BUTTON.classList.add('bg-prime', 'hover:bg-blue-600', 'text-white');
+            LANG_MS_BUTTON.classList.remove('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
+            LANG_EN_BUTTON.classList.remove('bg-prime', 'hover:bg-blue-600', 'text-white');
+            LANG_EN_BUTTON.classList.add('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
+        } else {
+            LANG_EN_BUTTON.classList.add('bg-prime', 'hover:bg-blue-600', 'text-white');
+            LANG_EN_BUTTON.classList.remove('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
+            LANG_MS_BUTTON.classList.remove('bg-prime', 'hover:bg-blue-600', 'text-white');
+            LANG_MS_BUTTON.classList.add('bg-gray-300', 'hover:bg-gray-400', 'text-gray-800');
+        }
+
+        updateUIText();
+    }
+    
+
+    function toggleQuizMode() {
+        isQuizMode = !isQuizMode;
+        
+        if (isQuizMode) {
+            MODE_TOGGLE_BUTTON.classList.remove('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
+            MODE_TOGGLE_BUTTON.classList.add('bg-pink-500', 'hover:bg-pink-600', 'text-white');
+            SCORE_DISPLAY.classList.remove('hidden'); 
+            resetQuizForMultiplier(); 
+        } else {
+            MODE_TOGGLE_BUTTON.classList.add('bg-yellow-400', 'hover:bg-yellow-500', 'text-gray-900');
+            MODE_TOGGLE_BUTTON.classList.remove('bg-pink-500', 'hover:bg-pink-600', 'text-white');
+            SCORE_DISPLAY.classList.add('hidden'); 
+        }
+        
+        stopSpeaking(); 
+        updateUIText(); 
+    }
+
+    function updateSoundToggleUI() {
+        if (isSoundEnabled) {
+            SOUND_ICON_ON.classList.remove('hidden');
+            SOUND_ICON_OFF.classList.add('hidden');
+            SOUND_TEXT.textContent = currentLanguage === 'ms' ? 'Bunyi' : 'Sound On'; 
+            SOUND_TOGGLE_BUTTON.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
+            SOUND_TOGGLE_BUTTON.classList.add('bg-green-100', 'hover:bg-green-200', 'text-green-700');
+        } else {
+            SOUND_ICON_ON.classList.add('hidden');
+            SOUND_ICON_OFF.classList.remove('hidden');
+            SOUND_TEXT.textContent = currentLanguage === 'ms' ? 'Senyap' : 'Mute'; 
+            SOUND_TOGGLE_BUTTON.classList.remove('bg-green-100', 'hover:bg-green-200', 'text-green-700');
+            SOUND_TOGGLE_BUTTON.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
+        }
+    }
+
+    function updateSifirDisplay() {
+        MULTIPLIER_SELECT.value = currentMultiplier; 
+
+        SIFIR_LIST.innerHTML = '';
+        
+        const answeredFactors = isQuizMode ? 
+            Array.from({ length: MAX_QUESTIONS }, (_, i) => i + 1)
+            .filter(factor => !quizQuestionsLeft.includes(factor)) : [];
+
+        for (let i = 1; i <= 12; i++) {
+            const result = currentMultiplier * i;
+            const equationDiv = document.createElement('div');
+            const rowClass = i % 2 !== 0 ? 'bg-pink-50' : 'bg-green-50'; 
+            
+            equationDiv.className = `equation flex justify-between items-center p-3 md:px-5 font-mono ${rowClass} hover:bg-yellow-100 transition duration-100`;
+            
+            equationDiv.addEventListener('mouseover', playClickSound);
+            equationDiv.addEventListener('touchstart', playClickSound);
+            
+            let answerHtml;
+            
+            if (isQuizMode) {
+                const isAnswered = answeredFactors.includes(i);
+                const answeredClass = isAnswered ? 'bg-green-500 text-white answered' : 'bg-gray-200 text-gray-200 hover:bg-gray-300 hover:text-gray-300 cursor-pointer';
+
+                answerHtml = `<span 
+                                data-result="${result}"
+                                data-factor2="${i}"
+                                class="answer-box font-extrabold select-none px-4 rounded-md text-3xl transition duration-200 ${answeredClass}">
+                                ${isAnswered ? result : '?'}
+                              </span>`;
+            } else {
+                answerHtml = `<span class="font-extrabold text-green-800 text-3xl">${result}</span>`;
+            }
+            
+            equationDiv.innerHTML = `
+                <span class="font-extrabold text-maroon text-3xl">${currentMultiplier}</span>
+                <span class="text-gray-900 text-3xl">x</span>
+                <span class="font-extrabold text-maroon text-3xl">${i}</span>
+                <span class="text-gray-900 text-3xl">=</span>
+                ${answerHtml}
+            `;
+            SIFIR_LIST.appendChild(equationDiv);
+        }
+
+        PREV_BUTTON.disabled = currentMultiplier === MIN_MULTIPLIER;
+        NEXT_BUTTON.disabled = currentMultiplier === MAX_MULTIPLIER;
+        
+        if (isQuizMode) {
+             SPEAK_BUTTON.disabled = quizQuestionsLeft.length === 0;
+        } else {
+             SPEAK_BUTTON.disabled = false;
+        }
+
+        if (isQuizMode) updateScoreDisplay();
+    }
+
+    function goToNextSifir() {
+        if (currentMultiplier < MAX_MULTIPLIER) {
+            currentMultiplier++;
+            resetQuizForMultiplier(); 
+            updateSifirDisplay();
+        }
+    }
+
+    function goToPrevSifir() {
+        if (currentMultiplier > MIN_MULTIPLIER) {
+            currentMultiplier--;
+            resetQuizForMultiplier(); 
+            updateSifirDisplay();
+        }
+    }
+    
+    function toggleSound() {
+        isSoundEnabled = !isSoundEnabled;
+        updateSoundToggleUI();
+        stopSpeaking(); 
+        
+        if (isSoundEnabled && audioContext && audioContext.state === 'suspended') {
+            audioContext.resume().catch(e => console.error("Ralat semasa resume AudioContext:", e));
+        }
+    }
+
+    function handleQuizClick(event) {
+        if (!isQuizMode) return;
+        
+        const clickedElement = event.target.closest('.answer-box');
+        
+        if (clickedElement && !clickedElement.classList.contains('answered')) {
+            const clickedFactor2 = parseInt(clickedElement.getAttribute('data-factor2'), 10);
+            const clickedResult = parseInt(clickedElement.getAttribute('data-result'), 10);
+            
+            let correctMessage;
+            let wrongMessage;
+            let noQuestionMessage;
+            
+            if (currentLanguage === 'ms') {
+                correctMessage = `BETUL! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
+                wrongMessage = 'Salah. Anda klik soalan lain. Soalan semasa ialah ' + `${quizTarget.factor1} x ${quizTarget.factor2}`;
+                noQuestionMessage = 'Sila tekan "Tanya Soalan" dahulu.';
+            } else {
+                correctMessage = `CORRECT! ${quizTarget.factor1} x ${quizTarget.factor2} = ${quizTarget.result}`;
+                wrongMessage = 'Wrong. You clicked another question. The current question is ' + `${quizTarget.factor1} x ${quizTarget.factor2}`;
+                noQuestionMessage = 'Please press "Ask Question" first.';
+            }
+            
+            if (quizTarget && clickedFactor2 === quizTarget.factor2) {
+                score++;
+                playCorrectSound();
+                AUDIO_MESSAGE.textContent = correctMessage;
+                
+                quizQuestionsLeft.splice(quizTarget.questionIndex, 1);
+                
+                clickedElement.textContent = clickedResult;
+                clickedElement.classList.remove('bg-gray-200', 'text-gray-200', 'hover:bg-gray-300', 'hover:text-gray-300', 'cursor-pointer');
+                clickedElement.classList.add('bg-green-500', 'text-white', 'answered');
+                
+                quizTarget = null;
+                
+                updateScoreDisplay(); 
+                if (quizQuestionsLeft.length > 0) {
+                    SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Tanya Soalan' : 'Ask Question';
+                } else {
+                     SPEAK_BUTTON.disabled = true;
+                     SPEAK_TEXT.textContent = currentLanguage === 'ms' ? 'Sifir Selesai!' : 'Table Done!';
+                     AUDIO_MESSAGE.textContent += currentLanguage === 'ms' ? ` (Sifir ${currentMultiplier} SELESAI!)` : ` (Table ${currentMultiplier} DONE!)`;
+                }
+                
+            } else if (!quizTarget) {
+                AUDIO_MESSAGE.textContent = noQuestionMessage;
+                playWrongSound();
+                
+            } else {
+                playWrongSound();
+                AUDIO_MESSAGE.textContent = wrongMessage;
+                
+                clickedElement.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                clickedElement.classList.add('bg-red-500', 'hover:bg-red-500');
+
+                setTimeout(() => {
+                    clickedElement.classList.remove('bg-red-500', 'hover:bg-red-500');
+                    clickedElement.classList.add('bg-gray-200', 'hover:bg-gray-300');
+                }, 500); 
+            }
+        }
+    }
+
+    function toggleTTSInfo() {
+        const isHidden = TTS_INFO_CONTENT.classList.contains('hidden');
+        if (isHidden) {
+            TTS_INFO_CONTENT.classList.remove('hidden');
+            TTS_INFO_ICON.classList.add('rotate-180'); 
+        } else {
+            TTS_INFO_CONTENT.classList.add('hidden');
+            TTS_INFO_ICON.classList.remove('rotate-180');
+        }
+    }
+
+    // --- 6. Inisialisasi Aplikasi (Initialization) ---
+    
+    async function initApp() {
+        toggleLanguage('ms'); 
+        
+        updateSoundToggleUI();
+        populateMultiplierSelect(); 
+        resetQuizForMultiplier(); 
+        updateSifirDisplay(); 
+        updateUIText(); 
+        
+        // Daftarkan Pendengar Acara Aplikasi
+        NEXT_BUTTON.addEventListener('click', goToNextSifir);
+        PREV_BUTTON.addEventListener('click', goToPrevSifir);
+        SPEAK_BUTTON.addEventListener('click', speakTable); 
+        MODE_TOGGLE_BUTTON.addEventListener('click', toggleQuizMode); 
+        MULTIPLIER_SELECT.addEventListener('change', (event) => {
+            const newMultiplier = parseInt(event.target.value, 10);
+            if (!isNaN(newMultiplier) && newMultiplier >= MIN_MULTIPLIER && newMultiplier <= MAX_MULTIPLIER) {
+                currentMultiplier = newMultiplier;
+                resetQuizForMultiplier(); 
+                updateSifirDisplay();
+            }
+        });
+        SOUND_TOGGLE_BUTTON.addEventListener('click', toggleSound);
+        SIFIR_LIST.addEventListener('click', handleQuizClick); 
+        TTS_INFO_TOGGLE.addEventListener('click', toggleTTSInfo);
+        LANG_MS_BUTTON.addEventListener('click', () => toggleLanguage('ms'));
+        LANG_EN_BUTTON.addEventListener('click', () => toggleLanguage('en'));
+        
+        console.log("App Initialized.");
+    }
+    
+    // --- 7. Inisialisasi Halaman (Page Initialization) ---
+    
+    window.onload = function() {
+        if (LOGIN_BUTTON) {
+            LOGIN_BUTTON.addEventListener('click', attemptLogin);
+        } else {
+             console.error("Ralat: Elemen 'login-button' tidak ditemui.");
+        }
+        
+        if (PASSWORD_INPUT) {
+             PASSWORD_INPUT.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    attemptLogin();
+                }
+            });
+            PASSWORD_INPUT.focus();
+        } else {
+             console.error("Ralat: Elemen 'password-input' tidak ditemui.");
+        }
+        
+        if (LOGOUT_BUTTON) {
+            LOGOUT_BUTTON.addEventListener('click', logout);
+        } else {
+            console.error("Ralat: Elemen 'logout-button' tidak ditemui.");
+        }
+    };
+
+</script>
